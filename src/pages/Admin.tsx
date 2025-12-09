@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import {
   useProfile,
   useLinks,
@@ -30,10 +31,12 @@ import {
   Link as LinkIcon,
   User,
   Share2,
+  ShieldAlert,
 } from "lucide-react";
 
 const Admin = () => {
   const { isAuthenticated, loading: authLoading, signOut } = useAuth();
+  const { isAdmin, loading: adminLoading } = useAdminRole();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -184,10 +187,25 @@ const Admin = () => {
     navigate("/");
   };
 
-  if (authLoading || profileLoading || linksLoading || socialLoading) {
+  if (authLoading || adminLoading || profileLoading || linksLoading || socialLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-foreground">جاري التحميل...</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
+        <div className="text-center space-y-4 p-8">
+          <ShieldAlert className="w-16 h-16 text-destructive mx-auto" />
+          <h1 className="text-2xl font-bold text-card-foreground">غير مصرح</h1>
+          <p className="text-muted-foreground">ليس لديك صلاحية الوصول لهذه الصفحة</p>
+          <Button onClick={() => navigate("/")} variant="outline">
+            العودة للصفحة الرئيسية
+          </Button>
+        </div>
       </div>
     );
   }
