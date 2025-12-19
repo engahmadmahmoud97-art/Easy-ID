@@ -8,6 +8,7 @@ import {
   Youtube,
   Linkedin,
   Link as LinkIconLucide,
+  User,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import ProfileAvatar from "./ProfileAvatar";
@@ -21,6 +22,7 @@ const iconMap: Record<string, LucideIcon> = {
   star: Star,
   "map-pin": MapPin,
   link: LinkIconLucide,
+  user: User,
 };
 
 const socialIconMap: Record<string, LucideIcon> = {
@@ -152,7 +154,7 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
               className="text-foreground/50 text-xs mt-8 animate-fade-in hover:text-foreground transition-colors"
               style={{ animationDelay: "800ms" }}
             >
-             powered by Easy ID
+              powered by Easy ID
             </a>
           </>
         )}

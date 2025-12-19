@@ -93,11 +93,11 @@ export const useLinks = (profileId?: string) => {
         .from("links")
         .select("*")
         .order("sort_order", { ascending: true });
-      
+
       if (profileId) {
         query = query.eq("profile_id", profileId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as Link[];
@@ -114,11 +114,11 @@ export const useSocialLinks = (profileId?: string) => {
         .from("social_links")
         .select("*")
         .order("sort_order", { ascending: true });
-      
+
       if (profileId) {
         query = query.eq("profile_id", profileId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as SocialLink[];
@@ -282,7 +282,7 @@ export const useDeleteSocialLink = () => {
 export const uploadAvatar = async (file: File): Promise<string> => {
   const fileExt = file.name.split(".").pop();
   const fileName = `avatar-${Date.now()}.${fileExt}`;
-  
+
   const { error: uploadError } = await supabase.storage
     .from("avatars")
     .upload(fileName, file);
@@ -296,10 +296,26 @@ export const uploadAvatar = async (file: File): Promise<string> => {
 export const uploadBackground = async (file: File): Promise<string> => {
   const fileExt = file.name.split(".").pop();
   const fileName = `background-${Date.now()}.${fileExt}`;
-  
+
   const { error: uploadError } = await supabase.storage
     .from("avatars")
     .upload(fileName, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+  return data.publicUrl;
+};
+
+export const uploadVcf = async (file: File): Promise<string> => {
+  const fileExt = "vcf";
+  const fileName = `contact-${Date.now()}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("avatars")
+    .upload(fileName, file, {
+      contentType: 'text/vcard'
+    });
 
   if (uploadError) throw uploadError;
 

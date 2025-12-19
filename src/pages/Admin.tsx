@@ -18,6 +18,7 @@ import {
   useDeleteSocialLink,
   uploadAvatar,
   uploadBackground,
+  uploadVcf,
   Link,
   SocialLink,
   Profile,
@@ -87,6 +88,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const backgroundInputRef = useRef<HTMLInputElement>(null);
+  const vcfInputRef = useRef<HTMLInputElement>(null);
 
   const { data: profiles = [], isLoading: profilesLoading } = useAllProfiles();
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
@@ -119,6 +121,7 @@ const Admin = () => {
   const [editableSocials, setEditableSocials] = useState<SocialLink[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadingBackground, setUploadingBackground] = useState(false);
+  const [uploadingVcf, setUploadingVcf] = useState(false);
 
   // New profile form
   const [showNewProfile, setShowNewProfile] = useState(false);
@@ -190,6 +193,48 @@ const Admin = () => {
       toast({ title: "Error uploading background", variant: "destructive" });
     } finally {
       setUploadingBackground(false);
+    }
+  };
+
+  const handleVcfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedProfile) return;
+
+    if (!file.name.toLowerCase().endsWith('.vcf')) {
+      toast({ title: "Please upload a .vcf file", variant: "destructive" });
+      return;
+    }
+
+    setUploadingVcf(true);
+    try {
+      const url = await uploadVcf(file);
+
+      // Check if a "Contact" link already exists
+      const existingContactLink = links.find(l => l.icon === 'user');
+
+      if (existingContactLink) {
+        await updateLink.mutateAsync({
+          id: existingContactLink.id,
+          url: url,
+          label: "Contact",
+          icon: "user"
+        });
+      } else {
+        await createLink.mutateAsync({
+          profile_id: selectedProfile.id,
+          label: "Contact",
+          url: url,
+          icon: "user",
+          sort_order: -1, // Put it at the top
+          is_active: true,
+        });
+      }
+
+      toast({ title: "Contact card updated successfully" });
+    } catch (error) {
+      toast({ title: "Error uploading contact card", variant: "destructive" });
+    } finally {
+      setUploadingVcf(false);
     }
   };
 
@@ -617,6 +662,42 @@ const Admin = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* VCF Upload Section */}
+              <div className="mt-8 pt-8 border-t border-link-border">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-background/30 p-4 rounded-2xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center">
+                      <User className="w-6 h-6 text-gold" />
+                    </div>
+                    <div>
+                      <h3 className="text-md font-bold text-card-foreground">Digital Contact Card (VCF)</h3>
+                      <p className="text-xs text-muted-foreground">Upload your contact file for one-tap saving</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input
+                      ref={vcfInputRef}
+                      type="file"
+                      accept=".vcf"
+                      onChange={handleVcfUpload}
+                      className="hidden"
+                    />
+                    {links.find(l => l.icon === 'user') && (
+                      <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-1 rounded-full font-bold">ACTIVE</span>
+                    )}
+                    <Button
+                      onClick={() => vcfInputRef.current?.click()}
+                      disabled={uploadingVcf}
+                      variant="outline"
+                      className="border-gold/30 hover:bg-gold/10 text-gold"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {uploadingVcf ? "Uploading..." : "Upload VCF"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </section>
 
             {/* Color Customization Section */}
@@ -750,49 +831,51 @@ const Admin = () => {
               </div>
 
               <div className="space-y-4">
-                {editableLinks.map((link) => (
-                  <div key={link.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-2xl border border-link-border group transition-all hover:border-gold/30">
-                    <div className="flex-1 grid md:grid-cols-2 gap-3">
-                      <Input
-                        value={link.label}
-                        onChange={(e) =>
-                          setEditableLinks((prev) =>
-                            prev.map((l) => (l.id === link.id ? { ...l, label: e.target.value } : l))
-                          )
-                        }
-                        placeholder="Link Title"
-                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground h-11 rounded-xl"
-                      />
-                      <Input
-                        value={link.url}
-                        onChange={(e) =>
-                          setEditableLinks((prev) =>
-                            prev.map((l) => (l.id === link.id ? { ...l, url: e.target.value } : l))
-                          )
-                        }
-                        placeholder="https://..."
-                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
-                        dir="ltr"
-                      />
+                {editableLinks
+                  .filter(l => l.icon !== 'user')
+                  .map((link) => (
+                    <div key={link.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-2xl border border-link-border group transition-all hover:border-gold/30">
+                      <div className="flex-1 grid md:grid-cols-2 gap-3">
+                        <Input
+                          value={link.label}
+                          onChange={(e) =>
+                            setEditableLinks((prev) =>
+                              prev.map((l) => (l.id === link.id ? { ...l, label: e.target.value } : l))
+                            )
+                          }
+                          placeholder="Link Title"
+                          className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground h-11 rounded-xl"
+                        />
+                        <Input
+                          value={link.url}
+                          onChange={(e) =>
+                            setEditableLinks((prev) =>
+                              prev.map((l) => (l.id === link.id ? { ...l, url: e.target.value } : l))
+                            )
+                          }
+                          placeholder="https://..."
+                          className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
+                          dir="ltr"
+                        />
+                      </div>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleUpdateLink(link)}
+                        className="text-gold hover:bg-gold/10"
+                      >
+                        <Save className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleDeleteLink(link.id)}
+                        className="text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleUpdateLink(link)}
-                      className="text-gold hover:bg-gold/10"
-                    >
-                      <Save className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleDeleteLink(link.id)}
-                      className="text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                  ))}
                 {editableLinks.length === 0 && (
                   <div className="text-center py-10 opacity-50 space-y-2">
                     <LinkIcon className="w-8 h-8 mx-auto" />
