@@ -41,7 +41,7 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
   // Use slug-based query if slug provided, otherwise fallback to default profile
   const { data: slugProfile, isLoading: slugLoading } = useProfileBySlug(slug);
   const { data: defaultProfile, isLoading: defaultLoading } = useProfile();
-  
+
   const profile = slug ? slugProfile : defaultProfile;
   const profileLoading = slug ? slugLoading : defaultLoading;
 
@@ -147,12 +147,13 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
             )}
 
             {/* Footer */}
-            <p
-              className="text-foreground/50 text-xs mt-8 animate-fade-in"
+            <a
+              href="/"
+              className="text-foreground/50 text-xs mt-8 animate-fade-in hover:text-foreground transition-colors"
               style={{ animationDelay: "800ms" }}
             >
-              صنع بـ ❤️
-            </p>
+             powered by Easy ID
+            </a>
           </>
         )}
       </div>
