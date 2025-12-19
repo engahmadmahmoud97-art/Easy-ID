@@ -110,20 +110,22 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
 
             {/* Links section */}
             <div className="w-full space-y-4 mt-4">
-              {links.map((link, index) => {
-                const IconComponent = iconMap[link.icon || "link"] || LinkIconLucide;
-                return (
-                  <LinkButton
-                    key={link.id}
-                    href={link.url}
-                    icon={IconComponent}
-                    label={link.label}
-                    delay={200 + index * 100}
-                    boxColor={profile?.box_color}
-                    textColor={profile?.box_text_color}
-                  />
-                );
-              })}
+              {links
+                .filter((link) => link.is_active !== false)
+                .map((link, index) => {
+                  const IconComponent = iconMap[link.icon || "link"] || LinkIconLucide;
+                  return (
+                    <LinkButton
+                      key={link.id}
+                      href={link.url}
+                      icon={IconComponent}
+                      label={link.label}
+                      delay={200 + index * 100}
+                      boxColor={profile?.box_color}
+                      textColor={profile?.box_text_color}
+                    />
+                  );
+                })}
             </div>
 
             {/* Social icons */}

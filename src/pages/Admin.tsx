@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import {
   Plus,
@@ -235,6 +236,21 @@ const Admin = () => {
       toast({ title: "Error uploading contact card", variant: "destructive" });
     } finally {
       setUploadingVcf(false);
+    }
+  };
+
+  const toggleVcfActive = async (checked: boolean) => {
+    const contactLink = links.find(l => l.icon === 'user');
+    if (!contactLink) return;
+
+    try {
+      await updateLink.mutateAsync({
+        id: contactLink.id,
+        is_active: checked
+      });
+      toast({ title: checked ? "Contact card enabled" : "Contact card disabled" });
+    } catch (error) {
+      toast({ title: "Error updating contact card status", variant: "destructive" });
     }
   };
 
@@ -675,7 +691,7 @@ const Admin = () => {
                       <p className="text-xs text-muted-foreground">Upload your contact file for one-tap saving</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <input
                       ref={vcfInputRef}
                       type="file"
@@ -683,9 +699,17 @@ const Admin = () => {
                       onChange={handleVcfUpload}
                       className="hidden"
                     />
+
                     {links.find(l => l.icon === 'user') && (
-                      <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-1 rounded-full font-bold">ACTIVE</span>
+                      <div className="flex items-center gap-2 bg-background/50 px-3 py-2 rounded-xl border border-link-border">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Status</span>
+                        <Switch
+                          checked={links.find(l => l.icon === 'user')?.is_active ?? false}
+                          onCheckedChange={toggleVcfActive}
+                        />
+                      </div>
                     )}
+
                     <Button
                       onClick={() => vcfInputRef.current?.click()}
                       disabled={uploadingVcf}
@@ -693,7 +717,7 @@ const Admin = () => {
                       className="border-gold/30 hover:bg-gold/10 text-gold"
                     >
                       <Upload className="w-4 h-4 mr-2" />
-                      {uploadingVcf ? "Uploading..." : "Upload VCF"}
+                      {uploadingVcf ? "Uploading..." : links.find(l => l.icon === 'user') ? "Update VCF" : "Upload VCF"}
                     </Button>
                   </div>
                 </div>
