@@ -19,7 +19,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/admin");
+      navigate("/secoseco");
     }
   }, [isAuthenticated, navigate]);
 
@@ -68,7 +68,7 @@ const Auth = () => {
             title: "مرحباً!",
             description: "تم تسجيل الدخول بنجاح",
           });
-          navigate("/admin");
+          navigate("/secoseco");
         }
       } else {
         const { error } = await signUp(email, password);
@@ -91,7 +91,7 @@ const Auth = () => {
             title: "تم التسجيل!",
             description: "تم إنشاء حسابك بنجاح",
           });
-          navigate("/admin");
+          navigate("/secoseco");
         }
       }
     } finally {

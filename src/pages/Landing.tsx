@@ -153,8 +153,10 @@ const Landing = () => {
       <nav className="fixed top-0 inset-x-0 z-[100] h-20 bg-background/50 backdrop-blur-xl border-b border-white/5">
         <div className="container h-full mx-auto px-6 lg:px-12 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="Easy ID" className="h-10 w-10 rounded-xl" />
-            <span className="text-xl font-black tracking-tighter uppercase">Easy ID</span>
+            <img src={logo} alt="Easy ID" className="h-12 w-12 md:h-16 md:w-16 rounded-2xl object-cover shadow-lg" />
+            <div className="flex flex-col">
+              <span className="text-xl md:text-2xl font-black tracking-tighter uppercase leading-none">Easy ID</span>
+            </div>
           </div>
 
           <div className="hidden md:flex items-center gap-10">
@@ -188,7 +190,7 @@ const Landing = () => {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-white/10 mb-8"
           >
             <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">The Future of Networking</span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">Easy ID Smart Networking</span>
           </motion.div>
 
           <motion.h1
@@ -262,8 +264,8 @@ const Landing = () => {
       <section id="features" className="py-32 relative">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-24">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6">WHY LINKME?</h2>
-            <p className="text-muted-foreground text-lg">Experience the next generation of business cards. Beautifully crafted hardware powered by smart tech.</p>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6 uppercase">WHY EASY ID?</h2>
+            <p className="text-muted-foreground text-lg">Easy ID is the next generation of business cards. Beautifully crafted hardware powered by smart tech for seamless networking.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -399,9 +401,11 @@ const Landing = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 text-center md:text-left">
             <div className="col-span-1 md:col-span-2 space-y-6">
-              <div className="flex items-center justify-center md:justify-start gap-3">
-                <img src={logo} alt="Logo" className="h-10 w-10 rounded-xl" />
-                <span className="text-2xl font-black tracking-tighter uppercase">Easy ID</span>
+              <div className="flex items-center justify-center md:justify-start gap-4">
+                <img src={logo} alt="Logo" className="h-16 w-16 md:h-20 md:w-20 rounded-2xl object-cover shadow-2xl" />
+                <div className="flex flex-col text-left">
+                  <span className="text-2xl font-black tracking-tighter uppercase leading-none">Easy ID</span>
+                </div>
               </div>
               <p className="text-muted-foreground max-w-sm mx-auto md:mx-0">
                 Premium smart networking solutions for professionals who want to leave a lasting impression.
@@ -428,7 +432,7 @@ const Landing = () => {
           </div>
 
           <div className="flex flex-col md:row items-center justify-between pt-12 border-t border-white/5 gap-6">
-            <p className="text-xs text-muted-foreground/60">© 2024 LinkMe. All rights reserved.</p>
+            <p className="text-xs text-muted-foreground/60">© 2024 Easy ID. All rights reserved.</p>
             <div className="flex gap-8 text-xs text-muted-foreground/60">
               <a href="#" className="hover:text-white">Privacy Policy</a>
               <a href="#" className="hover:text-white">Terms of Service</a>
