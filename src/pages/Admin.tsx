@@ -45,13 +45,13 @@ import {
 
 // URL validation schema
 const urlSchema = z.string()
-  .min(1, "الرابط مطلوب")
+  .min(1, "URL is required")
   .refine(
     (url) => {
       const lowerUrl = url.toLowerCase().trim();
       return !lowerUrl.startsWith("javascript:") && !lowerUrl.startsWith("data:");
     },
-    "رابط غير صالح"
+    "Invalid link"
   )
   .refine(
     (url) => {
@@ -63,11 +63,11 @@ const urlSchema = z.string()
         return false;
       }
     },
-    "رابط غير صالح - يجب أن يبدأ بـ https://"
+    "Invalid link - must start with https://"
   );
 
 const linkSchema = z.object({
-  label: z.string().min(1, "العنوان مطلوب").max(100, "العنوان طويل جداً"),
+  label: z.string().min(1, "Title is required").max(100, "Title is too long"),
   url: urlSchema,
 });
 
@@ -77,9 +77,9 @@ const socialLinkSchema = z.object({
 });
 
 const slugSchema = z.string()
-  .min(2, "الرابط قصير جداً")
-  .max(50, "الرابط طويل جداً")
-  .regex(/^[a-z0-9-]+$/, "يجب أن يحتوي على حروف إنجليزية صغيرة وأرقام وشرطات فقط");
+  .min(2, "Slug is too short")
+  .max(50, "Slug is too long")
+  .regex(/^[a-z0-9-]+$/, "Must contain only lowercase English letters, numbers, and hyphens");
 
 const Admin = () => {
   const { isAuthenticated, loading: authLoading, signOut } = useAuth();
@@ -90,9 +90,9 @@ const Admin = () => {
 
   const { data: profiles = [], isLoading: profilesLoading } = useAllProfiles();
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
-  
+
   const selectedProfile = profiles.find(p => p.id === selectedProfileId) || profiles[0];
-  
+
   const { data: links = [], isLoading: linksLoading } = useLinks(selectedProfile?.id);
   const { data: socialLinks = [], isLoading: socialLoading } = useSocialLinks(selectedProfile?.id);
 
@@ -119,7 +119,7 @@ const Admin = () => {
   const [editableSocials, setEditableSocials] = useState<SocialLink[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadingBackground, setUploadingBackground] = useState(false);
-  
+
   // New profile form
   const [showNewProfile, setShowNewProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
@@ -168,9 +168,9 @@ const Admin = () => {
       const url = await uploadAvatar(file);
       setAvatarUrl(url);
       await updateProfile.mutateAsync({ id: selectedProfile.id, avatar_url: url });
-      toast({ title: "تم رفع الصورة بنجاح" });
+      toast({ title: "Image uploaded successfully" });
     } catch (error) {
-      toast({ title: "خطأ في رفع الصورة", variant: "destructive" });
+      toast({ title: "Error uploading image", variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -185,9 +185,9 @@ const Admin = () => {
       const url = await uploadBackground(file);
       setBackgroundUrl(url);
       await updateProfile.mutateAsync({ id: selectedProfile.id, background_url: url });
-      toast({ title: "تم رفع الخلفية بنجاح" });
+      toast({ title: "Background uploaded successfully" });
     } catch (error) {
-      toast({ title: "خطأ في رفع الخلفية", variant: "destructive" });
+      toast({ title: "Error uploading background", variant: "destructive" });
     } finally {
       setUploadingBackground(false);
     }
@@ -195,14 +195,14 @@ const Admin = () => {
 
   const handleSaveProfile = async () => {
     if (!selectedProfile) return;
-    
+
     // Validate slug
     const slugValidation = slugSchema.safeParse(slug);
     if (!slugValidation.success) {
       toast({ title: slugValidation.error.errors[0]?.message, variant: "destructive" });
       return;
     }
-    
+
     try {
       await updateProfile.mutateAsync({
         id: selectedProfile.id,
@@ -215,12 +215,12 @@ const Admin = () => {
         icon_color: iconColor,
         icon_bg_color: iconBgColor,
       });
-      toast({ title: "تم حفظ البيانات بنجاح" });
+      toast({ title: "Profile saved successfully" });
     } catch (error: any) {
       if (error?.message?.includes("duplicate")) {
-        toast({ title: "هذا الرابط مستخدم بالفعل", variant: "destructive" });
+        toast({ title: "This slug is already in use", variant: "destructive" });
       } else {
-        toast({ title: "خطأ في الحفظ", variant: "destructive" });
+        toast({ title: "Error saving profile", variant: "destructive" });
       }
     }
   };
@@ -231,12 +231,12 @@ const Admin = () => {
       toast({ title: slugValidation.error.errors[0]?.message, variant: "destructive" });
       return;
     }
-    
+
     if (!newProfileName.trim()) {
-      toast({ title: "الاسم مطلوب", variant: "destructive" });
+      toast({ title: "Name is required", variant: "destructive" });
       return;
     }
-    
+
     try {
       const newProfile = await createProfile.mutateAsync({
         name: newProfileName,
@@ -246,30 +246,30 @@ const Admin = () => {
       setShowNewProfile(false);
       setNewProfileName("");
       setNewProfileSlug("");
-      toast({ title: "تم إنشاء البروفايل بنجاح" });
+      toast({ title: "Profile created successfully" });
     } catch (error: any) {
       if (error?.message?.includes("duplicate")) {
-        toast({ title: "هذا الرابط مستخدم بالفعل", variant: "destructive" });
+        toast({ title: "This slug is already in use", variant: "destructive" });
       } else {
-        toast({ title: "خطأ في إنشاء البروفايل", variant: "destructive" });
+        toast({ title: "Error creating profile", variant: "destructive" });
       }
     }
   };
 
   const handleDeleteProfile = async () => {
     if (!selectedProfile || profiles.length <= 1) {
-      toast({ title: "لا يمكن حذف البروفايل الوحيد", variant: "destructive" });
+      toast({ title: "Cannot delete the only profile", variant: "destructive" });
       return;
     }
-    
-    if (!confirm(`هل أنت متأكد من حذف "${selectedProfile.name}"؟`)) return;
-    
+
+    if (!confirm(`Are you sure you want to delete "${selectedProfile.name}"?`)) return;
+
     try {
       await deleteProfile.mutateAsync(selectedProfile.id);
       setSelectedProfileId(profiles.find(p => p.id !== selectedProfile.id)?.id || null);
-      toast({ title: "تم حذف البروفايل" });
+      toast({ title: "Profile deleted" });
     } catch (error) {
-      toast({ title: "خطأ في الحذف", variant: "destructive" });
+      toast({ title: "Error deleting profile", variant: "destructive" });
     }
   };
 
@@ -278,40 +278,40 @@ const Admin = () => {
     try {
       await createLink.mutateAsync({
         profile_id: selectedProfile.id,
-        label: "رابط جديد",
+        label: "New Link",
         url: "https://",
         icon: "link",
         sort_order: editableLinks.length,
         is_active: true,
       });
-      toast({ title: "تم إضافة الرابط" });
+      toast({ title: "Link added" });
     } catch (error) {
-      toast({ title: "خطأ في إضافة الرابط", variant: "destructive" });
+      toast({ title: "Error adding link", variant: "destructive" });
     }
   };
 
   const handleUpdateLink = async (link: Link) => {
     const validation = linkSchema.safeParse({ label: link.label, url: link.url });
     if (!validation.success) {
-      const errorMessage = validation.error.errors[0]?.message || "بيانات غير صالحة";
+      const errorMessage = validation.error.errors[0]?.message || "Invalid data";
       toast({ title: errorMessage, variant: "destructive" });
       return;
     }
 
     try {
       await updateLink.mutateAsync(link);
-      toast({ title: "تم تحديث الرابط" });
+      toast({ title: "Link updated" });
     } catch (error) {
-      toast({ title: "خطأ في التحديث", variant: "destructive" });
+      toast({ title: "Error updating link", variant: "destructive" });
     }
   };
 
   const handleDeleteLink = async (id: string) => {
     try {
       await deleteLink.mutateAsync(id);
-      toast({ title: "تم حذف الرابط" });
+      toast({ title: "Link deleted" });
     } catch (error) {
-      toast({ title: "خطأ في الحذف", variant: "destructive" });
+      toast({ title: "Error deleting link", variant: "destructive" });
     }
   };
 
@@ -325,34 +325,34 @@ const Admin = () => {
         is_active: true,
         sort_order: editableSocials.length,
       });
-      toast({ title: "تم إضافة رابط السوشيال" });
+      toast({ title: "Social link added" });
     } catch (error) {
-      toast({ title: "خطأ في الإضافة", variant: "destructive" });
+      toast({ title: "Error adding social link", variant: "destructive" });
     }
   };
 
   const handleUpdateSocial = async (social: SocialLink) => {
     const validation = socialLinkSchema.safeParse({ platform: social.platform, url: social.url });
     if (!validation.success) {
-      const errorMessage = validation.error.errors[0]?.message || "بيانات غير صالحة";
+      const errorMessage = validation.error.errors[0]?.message || "Invalid data";
       toast({ title: errorMessage, variant: "destructive" });
       return;
     }
 
     try {
       await updateSocialLink.mutateAsync(social);
-      toast({ title: "تم التحديث" });
+      toast({ title: "Social link updated" });
     } catch (error) {
-      toast({ title: "خطأ في التحديث", variant: "destructive" });
+      toast({ title: "Error updating social link", variant: "destructive" });
     }
   };
 
   const handleDeleteSocial = async (id: string) => {
     try {
       await deleteSocialLink.mutateAsync(id);
-      toast({ title: "تم الحذف" });
+      toast({ title: "Social link deleted" });
     } catch (error) {
-      toast({ title: "خطأ في الحذف", variant: "destructive" });
+      toast({ title: "Error deleting social link", variant: "destructive" });
     }
   };
 
@@ -364,20 +364,20 @@ const Admin = () => {
   if (authLoading || adminLoading || profilesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-foreground">جاري التحميل...</div>
+        <div className="text-foreground">Loading...</div>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
+      <div className="min-h-screen flex items-center justify-center bg-background" dir="ltr">
         <div className="text-center space-y-4 p-8">
           <ShieldAlert className="w-16 h-16 text-destructive mx-auto" />
-          <h1 className="text-2xl font-bold text-card-foreground">غير مصرح</h1>
-          <p className="text-muted-foreground">ليس لديك صلاحية الوصول لهذه الصفحة</p>
+          <h1 className="text-2xl font-bold text-card-foreground">Unauthorized</h1>
+          <p className="text-muted-foreground">You don't have permission to access this page</p>
           <Button onClick={() => navigate("/")} variant="outline">
-            العودة للصفحة الرئيسية
+            Back to Home
           </Button>
         </div>
       </div>
@@ -385,11 +385,11 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-card" dir="rtl">
+    <div className="min-h-screen bg-card" dir="ltr">
       {/* Header */}
       <header className="bg-primary/10 border-b border-link-border sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-card-foreground">لوحة التحكم</h1>
+          <h1 className="text-xl font-bold text-card-foreground">Admin Dashboard</h1>
           <div className="flex gap-3">
             {selectedProfile?.slug && (
               <Button
@@ -398,8 +398,8 @@ const Admin = () => {
                 onClick={() => window.open(`/${selectedProfile.slug}`, "_blank")}
                 className="border-link-border"
               >
-                <ExternalLink className="w-4 h-4 ml-2" />
-                عرض الصفحة
+                <ExternalLink className="w-4 h-4 mr-2" />
+                View Page
               </Button>
             )}
             <Button
@@ -408,17 +408,17 @@ const Admin = () => {
               onClick={() => navigate("/")}
               className="border-link-border"
             >
-              <Eye className="w-4 h-4 ml-2" />
-              الرئيسية
+              <Eye className="w-4 h-4 mr-2" />
+              Home
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleSignOut}
-              className="text-destructive"
+              className="text-destructive font-bold"
             >
-              <LogOut className="w-4 h-4 ml-2" />
-              خروج
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
             </Button>
           </div>
         </div>
@@ -430,11 +430,11 @@ const Admin = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-gold" />
-              <h2 className="text-lg font-semibold text-card-foreground">البروفايلات</h2>
+              <h2 className="text-lg font-semibold text-card-foreground">Profiles</h2>
             </div>
             <Button onClick={() => setShowNewProfile(!showNewProfile)} size="sm" className="bg-gold hover:bg-gold/90">
-              <Plus className="w-4 h-4 ml-1" />
-              بروفايل جديد
+              <Plus className="w-4 h-4 mr-1" />
+              New Profile
             </Button>
           </div>
 
@@ -443,31 +443,31 @@ const Admin = () => {
             <div className="bg-background/50 p-4 rounded-lg border border-link-border mb-4 space-y-3">
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-card-foreground">الاسم</Label>
+                  <Label className="text-card-foreground">Name</Label>
                   <Input
                     value={newProfileName}
                     onChange={(e) => setNewProfileName(e.target.value)}
-                    placeholder="اسم البروفايل"
+                    placeholder="Profile Name"
                     className="bg-card border-link-border mt-1 text-card-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
-                  <Label className="text-card-foreground">الرابط (slug)</Label>
+                  <Label className="text-card-foreground">URL Slug</Label>
                   <Input
                     value={newProfileSlug}
                     onChange={(e) => setNewProfileSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                     placeholder="my-profile"
-                    className="bg-card border-link-border mt-1 text-card-foreground placeholder:text-muted-foreground"
+                    className="bg-card border-link-border mt-1 text-card-foreground placeholder:text-muted-foreground font-mono text-sm"
                     dir="ltr"
                   />
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleCreateProfile} size="sm" className="bg-gold hover:bg-gold/90">
-                  إنشاء
+                  Create
                 </Button>
                 <Button onClick={() => setShowNewProfile(false)} size="sm" variant="outline">
-                  إلغاء
+                  Cancel
                 </Button>
               </div>
             </div>
@@ -481,7 +481,7 @@ const Admin = () => {
                 onClick={() => setSelectedProfileId(profile.id)}
                 variant={selectedProfileId === profile.id ? "default" : "outline"}
                 size="sm"
-                className={selectedProfileId === profile.id ? "bg-gold hover:bg-gold/90" : "border-link-border"}
+                className={selectedProfileId === profile.id ? "bg-gold hover:bg-gold/90 text-black font-bold" : "border-link-border"}
               >
                 {profile.name}
               </Button>
@@ -496,12 +496,12 @@ const Admin = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <User className="w-5 h-5 text-gold" />
-                  <h2 className="text-lg font-semibold text-card-foreground">معلومات البروفايل</h2>
+                  <h2 className="text-lg font-semibold text-card-foreground">Profile Details</h2>
                 </div>
                 {profiles.length > 1 && (
-                  <Button onClick={handleDeleteProfile} size="sm" variant="ghost" className="text-destructive">
-                    <Trash2 className="w-4 h-4 ml-1" />
-                    حذف
+                  <Button onClick={handleDeleteProfile} size="sm" variant="ghost" className="text-destructive font-bold">
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete Profile
                   </Button>
                 )}
               </div>
@@ -510,7 +510,7 @@ const Admin = () => {
                 {/* Avatar */}
                 <div className="flex flex-col items-center gap-4">
                   <div className="relative">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-link border-4 border-gold/30">
+                    <div className="w-32 h-32 rounded-full overflow-hidden bg-link border-4 border-gold/30 shadow-2xl">
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                       ) : (
@@ -527,31 +527,31 @@ const Admin = () => {
                       className="hidden"
                     />
                     <Button
-                      size="sm"
+                      size="icon"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploading}
-                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gold hover:bg-gold/90"
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gold hover:bg-gold/90 rounded-full h-10 w-10 shadow-lg"
                     >
-                      <Upload className="w-4 h-4" />
+                      <Upload className="w-4 h-4 text-black" />
                     </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {uploading ? "جاري الرفع..." : "اضغط لتغيير الصورة"}
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {uploading ? "Uploading..." : "Change Avatar"}
                   </p>
                 </div>
 
                 {/* Background Upload */}
                 <div className="flex flex-col items-center gap-4">
-                  <Label className="text-card-foreground flex items-center gap-2">
+                  <Label className="text-card-foreground flex items-center gap-2 font-bold">
                     <Image className="w-4 h-4 text-gold" />
-                    خلفية الصفحة
+                    Page Background
                   </Label>
                   <div className="relative w-full max-w-xs">
-                    <div className="w-full h-24 rounded-lg overflow-hidden bg-link border-2 border-gold/30">
+                    <div className="w-full h-24 rounded-2xl overflow-hidden bg-link border-2 border-gold/30 shadow-inner">
                       {backgroundUrl ? (
                         <img src={backgroundUrl} alt="Background" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground opacity-50">
                           <Image className="w-8 h-8" />
                         </div>
                       )}
@@ -564,56 +564,56 @@ const Admin = () => {
                       className="hidden"
                     />
                     <Button
-                      size="sm"
+                      size="icon"
                       onClick={() => backgroundInputRef.current?.click()}
                       disabled={uploadingBackground}
-                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gold hover:bg-gold/90"
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gold hover:bg-gold/90 rounded-full h-8 w-8 shadow-lg"
                     >
-                      <Upload className="w-4 h-4" />
+                      <Upload className="w-3 h-3 text-black" />
                     </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {uploadingBackground ? "جاري الرفع..." : "اضغط لتغيير الخلفية"}
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {uploadingBackground ? "Uploading..." : "Click to change background"}
                   </p>
                 </div>
 
                 {/* Name, Tagline & Slug */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name" className="text-card-foreground">الاسم</Label>
+                    <Label htmlFor="name" className="text-card-foreground font-bold">Display Name</Label>
                     <Input
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="bg-card border-link-border mt-1 text-card-foreground placeholder:text-muted-foreground"
+                      className="bg-card border-link-border mt-1 text-card-foreground h-12 rounded-xl"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="tagline" className="text-card-foreground">الوصف</Label>
+                    <Label htmlFor="tagline" className="text-card-foreground font-bold">Bio / Tagline</Label>
                     <Input
                       id="tagline"
                       value={tagline}
                       onChange={(e) => setTagline(e.target.value)}
-                      className="bg-card border-link-border mt-1 text-card-foreground placeholder:text-muted-foreground"
+                      className="bg-card border-link-border mt-1 text-card-foreground h-12 rounded-xl"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="slug" className="text-card-foreground">رابط الصفحة (slug)</Label>
+                    <Label htmlFor="slug" className="text-card-foreground font-bold">Public URL Slug</Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-muted-foreground text-sm">/</span>
+                      <span className="text-muted-foreground text-sm font-mono">easyid.ly/</span>
                       <Input
                         id="slug"
                         value={slug}
                         onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground"
+                        className="bg-card border-link-border text-card-foreground font-mono text-sm h-12 rounded-xl"
                         dir="ltr"
-                        placeholder="my-profile"
+                        placeholder="your-name"
                       />
                     </div>
                   </div>
-                  <Button onClick={handleSaveProfile} className="bg-gold hover:bg-gold/90">
-                    <Save className="w-4 h-4 ml-2" />
-                    حفظ
+                  <Button onClick={handleSaveProfile} className="bg-gold hover:bg-gold/90 text-black font-black w-full h-12 rounded-xl shadow-lg shadow-gold/10">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -623,27 +623,27 @@ const Admin = () => {
             <section className="bg-cream/50 rounded-xl p-6 border border-link-border">
               <div className="flex items-center gap-2 mb-6">
                 <Palette className="w-5 h-5 text-gold" />
-                <h2 className="text-lg font-semibold text-card-foreground">تخصيص الألوان</h2>
+                <h2 className="text-lg font-semibold text-card-foreground">Color Customization</h2>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Box Colors */}
                 <div className="space-y-4">
-                  <h3 className="text-md font-medium text-card-foreground">ألوان الروابط</h3>
+                  <h3 className="text-md font-medium text-card-foreground">Link Styling</h3>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <Label className="text-card-foreground text-sm">لون الخلفية</Label>
+                      <Label className="text-card-foreground text-sm">Background Color</Label>
                       <div className="flex items-center gap-2 mt-1">
                         <input
                           type="color"
                           value={boxColor}
                           onChange={(e) => setBoxColor(e.target.value)}
-                          className="w-12 h-10 rounded cursor-pointer border border-link-border"
+                          className="w-12 h-10 rounded cursor-pointer border border-link-border bg-transparent"
                         />
                         <Input
                           value={boxColor}
                           onChange={(e) => setBoxColor(e.target.value)}
-                          className="bg-card border-link-border flex-1 text-card-foreground"
+                          className="bg-card border-link-border flex-1 text-card-foreground font-mono"
                           dir="ltr"
                         />
                       </div>
@@ -651,49 +651,49 @@ const Admin = () => {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <Label className="text-card-foreground text-sm">لون النص</Label>
+                      <Label className="text-card-foreground text-sm">Text Color</Label>
                       <div className="flex items-center gap-2 mt-1">
                         <input
                           type="color"
                           value={boxTextColor}
                           onChange={(e) => setBoxTextColor(e.target.value)}
-                          className="w-12 h-10 rounded cursor-pointer border border-link-border"
+                          className="w-12 h-10 rounded cursor-pointer border border-link-border bg-transparent"
                         />
                         <Input
                           value={boxTextColor}
                           onChange={(e) => setBoxTextColor(e.target.value)}
-                          className="bg-card border-link-border flex-1 text-card-foreground"
+                          className="bg-card border-link-border flex-1 text-card-foreground font-mono"
                           dir="ltr"
                         />
                       </div>
                     </div>
                   </div>
                   {/* Preview */}
-                  <div 
-                    className="p-4 rounded-xl border border-link-border text-center"
+                  <div
+                    className="p-4 rounded-xl border border-link-border text-center font-bold"
                     style={{ backgroundColor: boxColor, color: boxTextColor }}
                   >
-                    معاينة الرابط
+                    Link Preview
                   </div>
                 </div>
 
                 {/* Icon Colors */}
                 <div className="space-y-4">
-                  <h3 className="text-md font-medium text-card-foreground">ألوان الأيقونات</h3>
+                  <h3 className="text-md font-medium text-card-foreground">Icon Styling</h3>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <Label className="text-card-foreground text-sm">لون الأيقونة</Label>
+                      <Label className="text-card-foreground text-sm">Icon Color</Label>
                       <div className="flex items-center gap-2 mt-1">
                         <input
                           type="color"
                           value={iconColor}
                           onChange={(e) => setIconColor(e.target.value)}
-                          className="w-12 h-10 rounded cursor-pointer border border-link-border"
+                          className="w-12 h-10 rounded cursor-pointer border border-link-border bg-transparent"
                         />
                         <Input
                           value={iconColor}
                           onChange={(e) => setIconColor(e.target.value)}
-                          className="bg-card border-link-border flex-1 text-card-foreground"
+                          className="bg-card border-link-border flex-1 text-card-foreground font-mono"
                           dir="ltr"
                         />
                       </div>
@@ -701,18 +701,18 @@ const Admin = () => {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <Label className="text-card-foreground text-sm">لون خلفية الأيقونة</Label>
+                      <Label className="text-card-foreground text-sm">Icon Background</Label>
                       <div className="flex items-center gap-2 mt-1">
                         <input
                           type="color"
                           value={iconBgColor}
                           onChange={(e) => setIconBgColor(e.target.value)}
-                          className="w-12 h-10 rounded cursor-pointer border border-link-border"
+                          className="w-12 h-10 rounded cursor-pointer border border-link-border bg-transparent"
                         />
                         <Input
                           value={iconBgColor}
                           onChange={(e) => setIconBgColor(e.target.value)}
-                          className="bg-card border-link-border flex-1 text-card-foreground"
+                          className="bg-card border-link-border flex-1 text-card-foreground font-mono"
                           dir="ltr"
                         />
                       </div>
@@ -720,8 +720,8 @@ const Admin = () => {
                   </div>
                   {/* Preview */}
                   <div className="flex justify-center">
-                    <div 
-                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
                       style={{ backgroundColor: iconBgColor, color: iconColor }}
                     >
                       <Share2 className="w-5 h-5" />
@@ -730,9 +730,9 @@ const Admin = () => {
                 </div>
               </div>
 
-              <Button onClick={handleSaveProfile} className="bg-gold hover:bg-gold/90 mt-6">
-                <Save className="w-4 h-4 ml-2" />
-                حفظ الألوان
+              <Button onClick={handleSaveProfile} className="bg-gold hover:bg-gold/90 text-black font-black mt-6 w-full md:w-auto px-10 rounded-xl">
+                <Save className="w-4 h-4 mr-2" />
+                Save Colors
               </Button>
             </section>
 
@@ -741,17 +741,17 @@ const Admin = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <LinkIcon className="w-5 h-5 text-gold" />
-                  <h2 className="text-lg font-semibold text-card-foreground">الروابط</h2>
+                  <h2 className="text-lg font-semibold text-card-foreground">Links</h2>
                 </div>
-                <Button onClick={handleAddLink} size="sm" className="bg-gold hover:bg-gold/90">
-                  <Plus className="w-4 h-4 ml-1" />
-                  إضافة
+                <Button onClick={handleAddLink} size="sm" className="bg-gold hover:bg-gold/90 text-black font-bold">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Link
                 </Button>
               </div>
 
               <div className="space-y-4">
                 {editableLinks.map((link) => (
-                  <div key={link.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-lg border border-link-border">
+                  <div key={link.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-2xl border border-link-border group transition-all hover:border-gold/30">
                     <div className="flex-1 grid md:grid-cols-2 gap-3">
                       <Input
                         value={link.label}
@@ -760,8 +760,8 @@ const Admin = () => {
                             prev.map((l) => (l.id === link.id ? { ...l, label: e.target.value } : l))
                           )
                         }
-                        placeholder="عنوان الرابط"
-                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground"
+                        placeholder="Link Title"
+                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground h-11 rounded-xl"
                       />
                       <Input
                         value={link.url}
@@ -770,8 +770,8 @@ const Admin = () => {
                             prev.map((l) => (l.id === link.id ? { ...l, url: e.target.value } : l))
                           )
                         }
-                        placeholder="الرابط"
-                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground"
+                        placeholder="https://..."
+                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
                         dir="ltr"
                       />
                     </div>
@@ -779,7 +779,7 @@ const Admin = () => {
                       size="icon"
                       variant="ghost"
                       onClick={() => handleUpdateLink(link)}
-                      className="text-gold"
+                      className="text-gold hover:bg-gold/10"
                     >
                       <Save className="w-4 h-4" />
                     </Button>
@@ -787,14 +787,17 @@ const Admin = () => {
                       size="icon"
                       variant="ghost"
                       onClick={() => handleDeleteLink(link.id)}
-                      className="text-destructive"
+                      className="text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 ))}
                 {editableLinks.length === 0 && (
-                  <p className="text-muted-foreground text-center py-8">لا يوجد روابط، أضف رابطك الأول</p>
+                  <div className="text-center py-10 opacity-50 space-y-2">
+                    <LinkIcon className="w-8 h-8 mx-auto" />
+                    <p className="text-sm">No links found. Add your first link to get started.</p>
+                  </div>
                 )}
               </div>
             </section>
@@ -804,17 +807,17 @@ const Admin = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Share2 className="w-5 h-5 text-gold" />
-                  <h2 className="text-lg font-semibold text-card-foreground">السوشيال ميديا</h2>
+                  <h2 className="text-lg font-semibold text-card-foreground">Social Media</h2>
                 </div>
-                <Button onClick={handleAddSocial} size="sm" className="bg-gold hover:bg-gold/90">
-                  <Plus className="w-4 h-4 ml-1" />
-                  إضافة
+                <Button onClick={handleAddSocial} size="sm" className="bg-gold hover:bg-gold/90 text-black font-bold">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Social
                 </Button>
               </div>
 
               <div className="space-y-4">
                 {editableSocials.map((social) => (
-                  <div key={social.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-lg border border-link-border">
+                  <div key={social.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-2xl border border-link-border transition-all hover:border-gold/30">
                     <div className="flex-1 grid md:grid-cols-2 gap-3">
                       <select
                         value={social.platform}
@@ -823,7 +826,7 @@ const Admin = () => {
                             prev.map((s) => (s.id === social.id ? { ...s, platform: e.target.value } : s))
                           )
                         }
-                        className="px-3 py-2 rounded-md bg-card border border-link-border text-card-foreground"
+                        className="px-4 py-2 rounded-xl bg-card border border-link-border text-card-foreground h-11 focus:ring-2 focus:ring-gold/20 outline-none transition-all"
                       >
                         <option value="facebook">Facebook</option>
                         <option value="instagram">Instagram</option>
@@ -840,8 +843,8 @@ const Admin = () => {
                             prev.map((s) => (s.id === social.id ? { ...s, url: e.target.value } : s))
                           )
                         }
-                        placeholder="الرابط"
-                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground"
+                        placeholder="Social Profile Link"
+                        className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
                         dir="ltr"
                       />
                     </div>
@@ -849,7 +852,7 @@ const Admin = () => {
                       size="icon"
                       variant="ghost"
                       onClick={() => handleUpdateSocial(social)}
-                      className="text-gold"
+                      className="text-gold hover:bg-gold/10"
                     >
                       <Save className="w-4 h-4" />
                     </Button>
@@ -857,14 +860,17 @@ const Admin = () => {
                       size="icon"
                       variant="ghost"
                       onClick={() => handleDeleteSocial(social.id)}
-                      className="text-destructive"
+                      className="text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 ))}
                 {editableSocials.length === 0 && (
-                  <p className="text-muted-foreground text-center py-8">لا يوجد روابط سوشيال</p>
+                  <div className="text-center py-10 opacity-50 space-y-2">
+                    <Share2 className="w-8 h-8 mx-auto" />
+                    <p className="text-sm">No social media links yet.</p>
+                  </div>
                 )}
               </div>
             </section>

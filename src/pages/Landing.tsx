@@ -1,562 +1,438 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
 import logo from "@/assets/logo.jpeg";
-import basicCard from "@/assets/products/basic-card.png";
-import woodenLaserCard from "@/assets/products/wooden-laser-card.png";
-import woodenPlainCard from "@/assets/products/wooden-plain-card.png";
-import customCard from "@/assets/products/custom-card.png";
-import blackCard from "@/assets/products/black-card.png";
-import fabricBracelet from "@/assets/products/fabric-bracelet.png";
-import rubberBracelet from "@/assets/products/rubber-bracelet.png";
-import instagramKeychain from "@/assets/products/instagram-keychain.png";
-import whatsappKeychain from "@/assets/products/whatsapp-keychain.png";
-import googleKeychain from "@/assets/products/google-keychain.png";
+import whiteSmartCard from "@/assets/products/white-smart-card.jpg";
+import whiteSmartSticker from "@/assets/products/white-smart-sticker.jpg";
+import blackSmartSticker from "@/assets/products/black-smart-sticker.jpg";
+import smartWhatsappKeychain from "@/assets/products/smart-whatsapp-keychain.jpg";
+import googleReviewsKeychain from "@/assets/products/google-reviews-keychain.jpg";
+import printableSmartKeychain from "@/assets/products/printable-smart-keychain.jpg";
+import instagramSmartKeychain from "@/assets/products/instagram-smart-keychain.jpg";
+import blackSmartCard from "@/assets/products/black-smart-card.jpg";
+import specialNfcCard from "@/assets/products/special-nfc-card.jpg";
+import instagramSmartCard from "@/assets/products/instagram-smart-card.jpg";
+import whatsappSmartCard from "@/assets/products/whatsapp-smart-card.jpg";
+import smartRing from "@/assets/products/smart-ring.png";
+import smartNecklace from "@/assets/products/smart-necklace.png";
+import personalisedSmartCard from "@/assets/products/personalised-smart-card.png";
+import smartStandMenu from "@/assets/products/smart-stand-menu.png";
+import personalisedWoodenCard from "@/assets/products/personalised-wooden-card.png";
+import smartWhiteNecklace from "@/assets/products/smart-white-necklace.png";
 
 const products = [
-  { id: 1, name: "بطاقة Basic", price: "15 د.أ", category: "بطاقات", image: basicCard },
-  { id: 2, name: "بطاقة خشبية ذكية مع حفر ليزر", price: "35 د.أ", category: "بطاقات", image: woodenLaserCard },
-  { id: 3, name: "بطاقة خشبية ذكية سادة", price: "25 د.أ", category: "بطاقات", image: woodenPlainCard },
-  { id: 4, name: "بطاقة الأعمال المخصصة", price: "30 د.أ", category: "بطاقات", image: customCard },
-  { id: 5, name: "بطاقة ذكية سوداء", price: "20 د.أ", category: "بطاقات", image: blackCard },
-  { id: 6, name: "أسوارة قماشية ذكية", price: "18 د.أ", category: "أساور", image: fabricBracelet },
-  { id: 7, name: "أسوارة مطاطية ضد الماء", price: "22 د.أ", category: "أساور", image: rubberBracelet },
-  { id: 8, name: "ميدالية انستجرام الذكية", price: "12 د.أ", category: "ميداليات", image: instagramKeychain },
-  { id: 9, name: "ميدالية واتساب الذكية", price: "12 د.أ", category: "ميداليات", image: whatsappKeychain },
-  { id: 10, name: "ميدالية تقييمات جوجل", price: "12 د.أ", category: "ميداليات", image: googleKeychain },
+  // 1-Personalised
+  { id: 1, name: "Smart Stand for Menu & Google Review", price: "50 $", category: "Personalised", image: smartStandMenu },
+  { id: 2, name: "Personalised Smart Card", price: "40 $", category: "Personalised", image: personalisedSmartCard },
+  { id: 3, name: "Personalised Wooden Card", price: "35 $", category: "Personalised", image: personalisedWoodenCard },
+
+  // 2-Smart accessories
+  { id: 4, name: "Smart White Necklace", price: "40 $", category: "Smart Accessories", image: smartWhiteNecklace },
+  { id: 5, name: "Smart Black Necklace", price: "35 $", category: "Smart Accessories", image: smartNecklace },
+  { id: 6, name: "Smart Ring", price: "35 $", category: "Smart Accessories", image: smartRing },
+
+  // 3- Cards
+  { id: 7, name: "Special Smart Card", price: "25 $", category: "Cards", image: specialNfcCard },
+  { id: 8, name: "Black Smart Card", price: "22 $", category: "Cards", image: blackSmartCard },
+  { id: 9, name: "White Smart Card", price: "22 $", category: "Cards", image: whiteSmartCard },
+  { id: 10, name: "WhatsApp Smart Card", price: "25 $", category: "Cards", image: whatsappSmartCard },
+  { id: 11, name: "Instagram Smart Card", price: "25 $", category: "Cards", image: instagramSmartCard },
+
+  // 4 - Smart keychain
+  { id: 12, name: "WhatsApp Keychain", price: "25 $", category: "Smart Keychain", image: smartWhatsappKeychain },
+  { id: 13, name: "Google Reviews Keychain", price: "25 $", category: "Smart Keychain", image: googleReviewsKeychain },
+  { id: 14, name: "Printable Smart Keychain", price: "20 $", category: "Smart Keychain", image: printableSmartKeychain },
+  { id: 15, name: "Instagram Keychain", price: "25 $", category: "Smart Keychain", image: instagramSmartKeychain },
+
+  // 5- Smart stickers
+  { id: 16, name: "White Smart Sticker", price: "18 $", category: "Smart Stickers", image: whiteSmartSticker },
+  { id: 17, name: "Black Smart Sticker", price: "17 $", category: "Smart Stickers", image: blackSmartSticker },
+
+  // 6- Protection products
+  { id: 18, name: "Anti ID Thief Card", price: "20 $", category: "Protection Products", image: blackSmartCard }, // Placeholder
+  { id: 19, name: "Protected Wallet & Passport", price: "25 $", category: "Protection Products", image: specialNfcCard }, // Placeholder
+  { id: 20, name: "Card Guard", price: "18 $", category: "Protection Products", image: whiteSmartCard }, // Placeholder
+];
+
+const categories = [
+  "All",
+  "Personalised",
+  "Smart Accessories",
+  "Cards",
+  "Smart Keychain",
+  "Smart Stickers",
+  "Protection Products"
 ];
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.1 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.9 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    transition: { duration: 0.5 },
   },
 };
 
 const ProductCard = ({ product }: { product: typeof products[0] }) => {
-  const whatsappMessage = encodeURIComponent(`مرحباً، أريد الاستفسار عن المنتج: ${product.name}`);
-  const whatsappLink = `https://wa.me/962791234567?text=${whatsappMessage}`;
+  const whatsappLink = `https://wa.me/962797541415?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name}`)}`;
 
   return (
     <motion.div
-      variants={itemVariants}
-      whileHover={{ y: -8 }}
-      className="group relative bg-gradient-to-br from-card to-card/80 rounded-3xl overflow-hidden border border-border/30 hover:border-brand-blue/50 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-brand-blue/10"
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.4 }}
+      className="group relative flex flex-col glass-card rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20"
     >
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/0 via-brand-yellow/0 to-brand-red/0 group-hover:from-brand-blue/5 group-hover:via-brand-yellow/5 group-hover:to-brand-red/5 transition-all duration-500" />
-      
-      {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
-        <motion.img
+        <img
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
-        
-        {/* Category Badge */}
-        <span className="absolute top-4 right-4 bg-brand-blue/90 backdrop-blur-sm text-white text-xs px-4 py-1.5 rounded-full font-medium shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <span className="absolute top-4 left-4 bg-white/10 backdrop-blur-md text-white text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-white/20">
           {product.category}
         </span>
       </div>
 
-      {/* Product Info */}
-      <div className="relative p-6 space-y-4">
-        <h3 className="text-lg font-bold text-foreground group-hover:text-brand-blue transition-colors duration-300 line-clamp-2 min-h-[3.5rem]">
+      <div className="p-6 space-y-4 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors duration-300">
           {product.name}
         </h3>
-        
-        <div className="flex items-center justify-between">
-          <p className="text-2xl font-black bg-gradient-to-r from-brand-yellow to-brand-red bg-clip-text text-transparent">
-            {product.price}
-          </p>
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+          <div className="flex flex-col">
+            <p className="text-2xl font-black text-white">{product.price}</p>
+            <div className="overflow-hidden">
+              <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider transition-all duration-500 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 mt-0 group-hover:mt-1">
+                SHIPPING AND PROGRAMMING INCLUDED
+              </p>
+            </div>
+          </div>
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-3 bg-primary text-primary-foreground rounded-2xl glow-on-hover transition-all duration-300 hover:scale-110"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+          </a>
         </div>
-        
-        <motion.a
-          href={whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-green-500/20 hover:shadow-green-500/40"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-          </svg>
-          اطلب الآن
-        </motion.a>
       </div>
     </motion.div>
   );
 };
 
 const Landing = () => {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const targetRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start start", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+
+  const filteredProducts = activeCategory === "All"
+    ? products
+    : products.filter(p => p.category === activeCategory);
+
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden" dir="rtl">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-brand-blue/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-brand-yellow/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-0 left-1/3 w-[600px] h-[600px] bg-brand-red/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
-      </div>
-
-      {/* Navigation */}
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-border/30"
-      >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <motion.img
-            src={logo}
-            alt="Logo"
-            className="h-14 w-auto rounded-lg"
-            whileHover={{ scale: 1.05 }}
-          />
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#products" className="text-foreground/70 hover:text-brand-blue transition-colors font-medium text-sm">
-              المنتجات
-            </a>
-            <a href="#features" className="text-foreground/70 hover:text-brand-blue transition-colors font-medium text-sm">
-              المميزات
-            </a>
-            <a href="#contact" className="text-foreground/70 hover:text-brand-blue transition-colors font-medium text-sm">
-              تواصل معنا
-            </a>
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 landing-page" dir="ltr">
+      {/* Navbar stays the same */}
+      <nav className="fixed top-0 inset-x-0 z-[100] h-20 bg-background/50 backdrop-blur-xl border-b border-white/5">
+        <div className="container h-full mx-auto px-6 lg:px-12 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="Easy ID" className="h-10 w-10 rounded-xl" />
+            <span className="text-xl font-black tracking-tighter uppercase">Easy ID</span>
           </div>
-          <motion.a
+
+          <div className="hidden md:flex items-center gap-10">
+            {["Products", "Features", "How it Works"].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase().replace(/ /g, "-")}`}
+                className="text-sm font-medium text-muted-foreground hover:text-white transition-colors capitalize"
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+
+          <a
             href="#products"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-brand-blue to-brand-blue/80 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-brand-blue/20"
+            className="px-6 py-2.5 bg-white text-black text-sm font-bold rounded-full hover:bg-primary hover:text-white transition-all duration-300"
           >
-            اطلب الآن
-          </motion.a>
+            Shop Now
+          </a>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
-        <div className="relative z-10 container mx-auto px-4 text-center py-20">
+      {/* Hero Section stays the same */}
+      <section ref={targetRef} className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
+        <motion.div style={{ opacity, scale }} className="relative z-10 text-center px-6 max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-white/10 mb-8"
+          >
+            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">The Future of Networking</span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] mb-8"
           >
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-              className="mb-8"
-            >
-              <img
-                src={logo}
-                alt="Logo"
-                className="w-28 h-28 mx-auto rounded-3xl shadow-2xl shadow-brand-blue/30 ring-4 ring-brand-blue/20"
-              />
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
-              <span className="inline-block bg-gradient-to-r from-brand-blue/20 to-brand-yellow/20 backdrop-blur-sm border border-brand-blue/30 text-brand-blue px-6 py-2 rounded-full text-sm font-medium mb-6">
-                ✨ تقنية NFC الذكية
-              </span>
-            </motion.div>
+            CONNECT <br />
+            <span className="text-gradient-primary animate-gradient">INSTANTLY.</span>
+          </motion.h1>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground mb-6 leading-tight tracking-tight"
-            >
-              أسهل وأحدث طريقة
-              <br />
-              <span className="bg-gradient-to-r from-brand-blue via-brand-yellow to-brand-red bg-clip-text text-transparent bg-[length:200%] animate-gradient">
-                لمشاركة معلوماتك
-              </span>
-            </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+          >
+            Share your contact details, social media, and more with just a single tap.
+            Smart NFC technology designed for the modern professional.
+          </motion.p>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-lg md:text-xl text-foreground/60 mb-10 max-w-2xl mx-auto leading-relaxed"
-            >
-              بمجرد <span className="text-brand-yellow font-bold">لمسة واحدة!</span> شارك بياناتك وحساباتك بسهولة مع بطاقات NFC الذكية
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <motion.a
-                href="#products"
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px -10px rgba(0, 180, 216, 0.4)" }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-4 px-10 bg-gradient-to-r from-brand-blue to-brand-blue/80 text-white font-bold text-lg rounded-2xl shadow-lg shadow-brand-blue/30 transition-all duration-300"
-              >
-                تصفح المنتجات
-                <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </motion.a>
-              <motion.a
-                href="https://wa.me/962791234567"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-4 px-10 bg-card border-2 border-border/50 hover:border-green-500/50 text-foreground font-bold text-lg rounded-2xl transition-all duration-300"
-              >
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                تواصل معنا
-              </motion.a>
-            </motion.div>
-          </motion.div>
-
-          {/* Scroll Indicator */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, y: [0, 10, 0] }}
-            transition={{ delay: 1.5, duration: 1.5, repeat: Infinity }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
-            <div className="w-7 h-12 border-2 border-foreground/20 rounded-full flex items-start justify-center p-2">
-              <div className="w-1.5 h-3 bg-brand-blue rounded-full" />
-            </div>
+            <a
+              href="#products"
+              className="group relative px-10 py-5 bg-primary text-primary-foreground font-black text-lg rounded-[2rem] overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              <span className="relative z-10">Explore Collection</span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            </a>
+            <a
+              href="#how-it-works"
+              className="px-10 py-5 bg-white/5 border border-white/10 text-white font-bold text-lg rounded-[2rem] hover:bg-white/10 transition-all duration-300"
+            >
+              How it works
+            </a>
           </motion.div>
+        </motion.div>
+
+        {/* Floating background elements */}
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-primary/20 blur-[150px] rounded-full" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-purple-500/10 blur-[150px] rounded-full" />
+      </section>
+
+      {/* Trust Stats Section */}
+      <section className="py-24 border-y border-white/5 bg-white/[0.02]">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+            {[
+              { label: "Happy Clients", value: "2k+" },
+              { label: "Products Sold", value: "5k+" },
+              { label: "NFC Interactions", value: "100k+" },
+              { label: "Custom Designs", value: "500+" },
+            ].map((stat, i) => (
+              <div key={i} className="space-y-2">
+                <h4 className="text-4xl md:text-5xl font-black text-white">{stat.value}</h4>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative py-24">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block bg-brand-yellow/10 text-brand-yellow px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              لماذا تختارنا؟
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4">
-              طرق متعددة لمشاركة معلوماتك
-            </h2>
-            <p className="text-foreground/50 text-lg max-w-2xl mx-auto">
-              اختر من بين مجموعتنا المتنوعة من منتجات NFC الذكية
-            </p>
-          </motion.div>
+      <section id="features" className="py-32 relative">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-24">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6">WHY LINKME?</h2>
+            <p className="text-muted-foreground text-lg">Experience the next generation of business cards. Beautifully crafted hardware powered by smart tech.</p>
+          </div>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { icon: "💳", title: "بطاقات NFC", desc: "بطاقات أنيقة وعصرية بتصاميم متعددة", color: "brand-blue" },
-              { icon: "⌚", title: "أساور ذكية", desc: "أساور عصرية مقاومة للماء", color: "brand-yellow" },
-              { icon: "🔑", title: "ميداليات ذكية", desc: "ميداليات لمنصات التواصل الاجتماعي", color: "brand-red" },
-            ].map((feature, index) => (
+              {
+                icon: "⚡",
+                title: "One Tap",
+                desc: "No more paper cards. One tap to any smartphone shares everything instantly."
+              },
+              {
+                icon: "🎨",
+                title: "Fully Custom",
+                desc: "Design your card to match your brand. Laser engraving, full color, or minimalist."
+              },
+              {
+                icon: "🛡️",
+                title: "Safe & Secure",
+                desc: "Your data is protected. You control exactly what you share and when."
+              },
+            ].map((feat, i) => (
               <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="relative bg-gradient-to-br from-card to-card/50 p-8 rounded-3xl border border-border/30 hover:border-brand-blue/30 transition-all duration-500 group"
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 }}
+                className="p-10 glass-card rounded-[3rem] space-y-6 hover:border-primary/50 transition-colors"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/0 to-brand-yellow/0 group-hover:from-brand-blue/5 group-hover:to-brand-yellow/5 rounded-3xl transition-all duration-500" />
-                <div className="relative">
-                  <div className="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-brand-blue/20 to-brand-yellow/20 flex items-center justify-center text-3xl">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-3">{feature.title}</h3>
-                  <p className="text-foreground/50 leading-relaxed">{feature.desc}</p>
-                </div>
+                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl">{feat.icon}</div>
+                <h3 className="text-2xl font-bold">{feat.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feat.desc}</p>
               </motion.div>
             ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Customization Section */}
-      <section className="relative py-24 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628]" />
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="order-2 lg:order-1"
-            >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight">
-                بطاقات الأعمال
-                <br />
-                <span className="text-brand-blue">الرقمية</span> قابلة
-                <br />
-                للتخصيص بالكامل
-              </h2>
-              <p className="text-foreground/60 text-lg leading-relaxed mb-8 max-w-xl">
-                تخلّص من البطاقات الورقية - بطاقات الأعمال الرقمية المخصصة بتقنية NFC تترك انطباعاً خاصاً. انقر لمشاركة معلومات الاتصال الخاصة بك في ثوانٍ. اختر من بين البطاقات البلاستيكية والتصميم المعدني - تأتي كل بطاقة مع رمز QR للمشاركة السريعة. ✨
-              </p>
-              <motion.a
-                href="#products"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center justify-center gap-2 py-4 px-10 bg-foreground text-background font-bold text-lg rounded-full transition-all duration-300 hover:bg-foreground/90"
-              >
-                اطلب الآن
-              </motion.a>
-            </motion.div>
-
-            {/* Floating Cards Visual */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="order-1 lg:order-2 relative h-[400px] md:h-[500px]"
-            >
-              {/* Main Card */}
-              <motion.div
-                animate={{ y: [0, -15, 0], rotate: [0, 2, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 md:w-80"
-              >
-                <div className="bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/20">
-                  <div className="flex justify-between items-start mb-8">
-                    <div>
-                      <p className="text-gray-600 text-sm">Your Logo</p>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <div className="flex gap-0.5">
-                        {[...Array(4)].map((_, i) => (
-                          <div key={i} className="w-1 h-1 bg-brand-blue rounded-full" />
-                        ))}
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-brand-blue/20 flex items-center justify-center">
-                        <svg className="w-3 h-3 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-gray-800 font-bold text-lg">Your Name</p>
-                      <p className="text-gray-500 text-sm">Your Title</p>
-                    </div>
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg p-1">
-                      <div className="w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCBmaWxsPSIjMDAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIvPjxyZWN0IGZpbGw9IiNmZmYiIHg9IjEwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIi8+PHJlY3QgZmlsbD0iI2ZmZiIgeD0iNDAiIHk9IjEwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiLz48cmVjdCBmaWxsPSIjZmZmIiB4PSI3MCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIvPjxyZWN0IGZpbGw9IiNmZmYiIHg9IjEwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIi8+PHJlY3QgZmlsbD0iI2ZmZiIgeD0iNDAiIHk9IjQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiLz48cmVjdCBmaWxsPSIjZmZmIiB4PSI3MCIgeT0iNDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIvPjxyZWN0IGZpbGw9IiNmZmYiIHg9IjEwIiB5PSI3MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIi8+PHJlY3QgZmlsbD0iI2ZmZiIgeD0iNDAiIHk9IjcwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiLz48cmVjdCBmaWxsPSIjZmZmIiB4PSI3MCIgeT0iNzAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIvPjwvc3ZnPg==')] bg-cover rounded" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating Elements */}
-              <motion.div
-                animate={{ y: [0, -20, 0], rotate: [0, -5, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute top-10 right-10 w-16 h-16 md:w-20 md:h-20"
-              >
-                <div className="w-full h-full bg-gradient-to-br from-brand-blue/30 to-brand-blue/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-brand-blue/30 shadow-lg shadow-brand-blue/20">
-                  <span className="text-2xl">🎨</span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, -25, 0], rotate: [0, 8, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute top-20 left-5 w-14 h-14 md:w-16 md:h-16"
-              >
-                <div className="w-full h-full bg-gradient-to-br from-brand-yellow/30 to-brand-yellow/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-brand-yellow/30 shadow-lg shadow-brand-yellow/20">
-                  <div className="grid grid-cols-2 gap-0.5">
-                    {['bg-red-500', 'bg-yellow-500', 'bg-green-500', 'bg-blue-500'].map((color, i) => (
-                      <div key={i} className={`w-2 h-2 ${color} rounded-full`} />
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, -18, 0], rotate: [0, -3, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                className="absolute bottom-20 left-10 w-12 h-12 md:w-14 md:h-14"
-              >
-                <div className="w-full h-full bg-gradient-to-br from-brand-red/30 to-brand-red/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-brand-red/30 shadow-lg shadow-brand-red/20">
-                  <span className="text-xl">✏️</span>
-                </div>
-              </motion.div>
-
-              {/* Decorative glow */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-blue/10 rounded-full blur-3xl pointer-events-none" />
-            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Products Section */}
-      <section id="products" className="relative py-24">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block bg-brand-blue/10 text-brand-blue px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              تسوق الآن
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4">
-              منتجاتنا
-            </h2>
-            <p className="text-foreground/50 text-lg max-w-2xl mx-auto">
-              اكتشف مجموعتنا المتنوعة من منتجات NFC الذكية
-            </p>
-          </motion.div>
+      {/* Products Section with Tabs */}
+      <section id="products" className="py-32">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col items-center text-center mb-16">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">OUR COLLECTION</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mb-12">From premium cards to stylish wearables. Find the perfect piece for your digital identity.</p>
+
+            <div className="flex flex-wrap items-center justify-center gap-2 p-2 glass-card rounded-full border-white/5 overflow-x-auto max-w-full">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap ${activeCategory === cat
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                    : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
           >
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </AnimatePresence>
           </motion.div>
         </div>
       </section>
 
-      {/* How it Works Section */}
-      <section className="relative py-24 bg-gradient-to-b from-card/50 to-transparent">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block bg-brand-red/10 text-brand-red px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              سهولة الاستخدام
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4">
-              كيف تعمل؟
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
-          >
+      {/* How it Works */}
+      <section id="how-it-works" className="py-32 bg-white/[0.01]">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-6xl font-black text-center mb-24">HOW IT WORKS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             {[
-              { step: "01", title: "اختر منتجك", desc: "اختر البطاقة أو الأسوارة المناسبة لك" },
-              { step: "02", title: "أضف بياناتك", desc: "قم بإضافة معلوماتك وروابط حساباتك" },
-              { step: "03", title: "شارك بلمسة", desc: "قرّب البطاقة من أي هاتف لمشاركة بياناتك" },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className="text-center"
-              >
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-brand-blue to-brand-yellow flex items-center justify-center text-2xl font-black text-background">
-                  {item.step}
+              { step: "01", title: "Pick your product", desc: "Choose from our wide range of NFC-enabled gear." },
+              { step: "02", title: "Set your profile", desc: "Easily upload your links and contact info via our portal." },
+              { step: "03", title: "Tap to share", desc: "Tap your Easy ID to any smartphone and you're connected!" },
+            ].map((item, i) => (
+              <div key={i} className="relative text-center space-y-6">
+                <div className="text-8xl font-black text-white/[0.03] absolute -top-12 inset-x-0">{item.step}</div>
+                <div className="relative z-10 w-20 h-20 bg-primary mx-auto rounded-full flex items-center justify-center text-2xl font-black text-primary-foreground">
+                  {i + 1}
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>
-                <p className="text-foreground/50">{item.desc}</p>
-              </motion.div>
+                <h3 className="text-2xl font-bold relative z-10">{item.title}</h3>
+                <p className="text-muted-foreground relative z-10">{item.desc}</p>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Contact CTA Section */}
-      <section id="contact" className="relative py-24">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative bg-gradient-to-br from-brand-blue/10 via-card to-brand-yellow/10 rounded-[2.5rem] p-10 md:p-16 text-center border border-border/30 max-w-4xl mx-auto overflow-hidden"
-          >
-            {/* Background decorations */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-blue/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-yellow/20 rounded-full blur-3xl" />
-            
-            <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
-                هل لديك أسئلة؟
-              </h2>
-              <p className="text-foreground/50 text-lg mb-8 max-w-xl mx-auto">
-                تواصل معنا الآن عبر الواتساب وسنساعدك في اختيار المنتج المناسب لك
-              </p>
-              <motion.a
-                href="https://wa.me/962791234567"
+      {/* Final CTA */}
+      <section className="py-32 overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="relative glass-card rounded-[4rem] p-12 md:p-24 overflow-hidden text-center">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+
+            <h2 className="text-4xl md:text-7xl font-black tracking-tight mb-8 relative z-10">
+              READY TO <br className="md:hidden" /> UPGRADE?
+            </h2>
+            <p className="text-muted-foreground text-lg mb-12 max-w-xl mx-auto relative z-10">
+              Join thousands of professionals who have ditched paper for the future of networking.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
+              <a
+                href="#products"
+                className="px-12 py-5 bg-white text-black font-black text-lg rounded-full hover:bg-primary hover:text-white transition-all duration-300"
+              >
+                Shop All Products
+              </a>
+              <a
+                href="https://wa.me/962797541415"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px -10px rgba(34, 197, 94, 0.4)" }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-3 py-4 px-10 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg rounded-2xl shadow-lg transition-all duration-300"
+                className="px-12 py-5 bg-green-500 text-white font-black text-lg rounded-full hover:bg-green-600 transition-all duration-300 flex items-center gap-3 shadow-lg shadow-green-500/20"
               >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                تواصل معنا عبر الواتساب
-              </motion.a>
+                Chat on WhatsApp
+              </a>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative py-12 border-t border-border/30">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <img src={logo} alt="Logo" className="h-12 w-auto rounded-xl" />
-              <div className="text-right">
-                <p className="font-bold text-foreground">NFC Cards</p>
-                <p className="text-sm text-foreground/50">بطاقات ذكية لمستقبل أفضل</p>
+      <footer className="py-20 border-t border-white/5">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 text-center md:text-left">
+            <div className="col-span-1 md:col-span-2 space-y-6">
+              <div className="flex items-center justify-center md:justify-start gap-3">
+                <img src={logo} alt="Logo" className="h-10 w-10 rounded-xl" />
+                <span className="text-2xl font-black tracking-tighter uppercase">Easy ID</span>
               </div>
+              <p className="text-muted-foreground max-w-sm mx-auto md:mx-0">
+                Premium smart networking solutions for professionals who want to leave a lasting impression.
+              </p>
             </div>
-            <p className="text-foreground/40 text-sm">
-              © 2024 جميع الحقوق محفوظة
-            </p>
+
+            <div>
+              <h5 className="font-bold mb-6 text-white uppercase text-xs tracking-widest">Connect</h5>
+              <ul className="space-y-4 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-white transition-colors">Instagram</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">LinkedIn</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">TikTok</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-bold mb-6 text-white uppercase text-xs tracking-widest">Support</h5>
+              <ul className="space-y-4 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Shipping Info</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:row items-center justify-between pt-12 border-t border-white/5 gap-6">
+            <p className="text-xs text-muted-foreground/60">© 2024 LinkMe. All rights reserved.</p>
+            <div className="flex gap-8 text-xs text-muted-foreground/60">
+              <a href="#" className="hover:text-white">Privacy Policy</a>
+              <a href="#" className="hover:text-white">Terms of Service</a>
+            </div>
           </div>
         </div>
       </footer>

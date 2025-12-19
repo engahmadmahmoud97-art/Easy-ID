@@ -25,7 +25,7 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       toast({
         title: "خطأ",
@@ -101,62 +101,55 @@ const Auth = () => {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center p-6 relative"
-      dir="rtl"
+      className="min-h-screen w-full flex items-center justify-center p-6 relative landing-page"
+      dir="ltr"
     >
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${spaBackground})` }}
-      />
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" />
-
       {/* Auth Card */}
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-link-border">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-card-foreground mb-2">
-              {isLogin ? "تسجيل الدخول" : "إنشاء حساب"}
+        <div className="glass-card rounded-[2.5rem] p-10 space-y-8 border-white/10">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-black tracking-tight text-white mb-2">
+              {isLogin ? "Welcome Back" : "Create Account"}
             </h1>
             <p className="text-muted-foreground text-sm">
-              {isLogin ? "أدخل بياناتك للوصول للوحة التحكم" : "أنشئ حساب جديد للإدارة"}
+              {isLogin ? "Log in to manage your digital profile" : "Start your smart networking journey today"}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-card-foreground">البريد الإلكتروني</Label>
+              <Label htmlFor="email" className="text-white font-bold ml-1">Email Address</Label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@email.com"
-                  className="pr-10 bg-background/50 border-link-border"
+                  placeholder="name@example.com"
+                  className="pl-12 bg-white/5 border-white/10 rounded-2xl h-12 focus:ring-primary focus:border-primary"
                   dir="ltr"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-card-foreground">كلمة المرور</Label>
+              <Label htmlFor="password" className="text-white font-bold ml-1">Password</Label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pr-10 pl-10 bg-background/50 border-link-border"
+                  className="pl-12 pr-12 bg-white/5 border-white/10 rounded-2xl h-12 focus:ring-primary focus:border-primary"
                   dir="ltr"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-card-foreground"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -165,19 +158,19 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gold hover:bg-gold/90 text-card-foreground font-medium"
+              className="w-full bg-white hover:bg-primary text-black hover:text-white font-black h-14 rounded-2xl transition-all duration-300 shadow-xl shadow-primary/10"
               disabled={isLoading}
             >
-              {isLoading ? "جاري التحميل..." : isLogin ? "دخول" : "تسجيل"}
+              {isLoading ? "Please wait..." : isLogin ? "Sign In" : "Get Started"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="pt-4 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-gold hover:underline text-sm"
+              className="text-sm font-medium text-muted-foreground hover:text-white transition-all underline underline-offset-4"
             >
-              {isLogin ? "ليس لديك حساب؟ سجل الآن" : "لديك حساب؟ سجل دخولك"}
+              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
             </button>
           </div>
         </div>
