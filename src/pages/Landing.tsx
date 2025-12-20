@@ -18,6 +18,8 @@ import personalisedSmartCard from "@/assets/products/personalised-smart-card.png
 import smartStandMenu from "@/assets/products/smart-stand-menu.png";
 import personalisedWoodenCard from "@/assets/products/personalised-wooden-card.png";
 import smartWhiteNecklace from "@/assets/products/smart-white-necklace.png";
+import waterproofBracelet from "@/assets/products/waterproof-bracelet.jpg";
+import fabricBracelet from "@/assets/products/fabric-bracelet.jpg";
 
 const products = [
   // 1-Personalised
@@ -29,28 +31,30 @@ const products = [
   { id: 4, name: "Smart White Necklace", price: "40 $", originalPrice: "60 $", category: "Smart Accessories", image: smartWhiteNecklace },
   { id: 5, name: "Smart Black Necklace", price: "35 $", originalPrice: "50 $", category: "Smart Accessories", image: smartNecklace },
   { id: 6, name: "Smart Ring", price: "35 $", originalPrice: "50 $", category: "Smart Accessories", image: smartRing },
+  { id: 7, name: "Waterproof Smart Bracelet", price: "38 $", originalPrice: "55 $", category: "Smart Accessories", image: waterproofBracelet },
+  { id: 8, name: "Fabric Smart Bracelet", price: "34 $", originalPrice: "50 $", category: "Smart Accessories", image: fabricBracelet },
 
   // 3- Cards
-  { id: 7, name: "Special Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: specialNfcCard },
-  { id: 8, name: "Black Smart Card", price: "22 $", originalPrice: "35 $", category: "Cards", image: blackSmartCard },
-  { id: 9, name: "White Smart Card", price: "22 $", originalPrice: "35 $", category: "Cards", image: whiteSmartCard },
-  { id: 10, name: "WhatsApp Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: whatsappSmartCard },
-  { id: 11, name: "Instagram Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: instagramSmartCard },
+  { id: 9, name: "Special Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: specialNfcCard },
+  { id: 10, name: "Black Smart Card", price: "22 $", originalPrice: "35 $", category: "Cards", image: blackSmartCard },
+  { id: 11, name: "White Smart Card", price: "22 $", originalPrice: "35 $", category: "Cards", image: whiteSmartCard },
+  { id: 12, name: "WhatsApp Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: whatsappSmartCard },
+  { id: 13, name: "Instagram Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: instagramSmartCard },
 
   // 4 - Smart keychain
-  { id: 12, name: "WhatsApp Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: smartWhatsappKeychain },
-  { id: 13, name: "Google Reviews Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: googleReviewsKeychain },
-  { id: 14, name: "Printable Smart Keychain", price: "20 $", originalPrice: "30 $", category: "Smart Keychain", image: printableSmartKeychain },
-  { id: 15, name: "Instagram Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: instagramSmartKeychain },
+  { id: 14, name: "WhatsApp Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: smartWhatsappKeychain },
+  { id: 15, name: "Google Reviews Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: googleReviewsKeychain },
+  { id: 16, name: "Printable Smart Keychain", price: "20 $", originalPrice: "30 $", category: "Smart Keychain", image: printableSmartKeychain },
+  { id: 17, name: "Instagram Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: instagramSmartKeychain },
 
   // 5- Smart stickers
-  { id: 16, name: "White Smart Sticker", price: "18 $", originalPrice: "28 $", category: "Smart Stickers", image: whiteSmartSticker },
-  { id: 17, name: "Black Smart Sticker", price: "17 $", originalPrice: "25 $", category: "Smart Stickers", image: blackSmartSticker },
+  { id: 18, name: "White Smart Sticker", price: "18 $", originalPrice: "28 $", category: "Smart Stickers", image: whiteSmartSticker },
+  { id: 19, name: "Black Smart Sticker", price: "17 $", originalPrice: "25 $", category: "Smart Stickers", image: blackSmartSticker },
 
   // 6- Protection products
-  { id: 18, name: "Anti ID Thief Card", price: "20 $", originalPrice: "30 $", category: "Protection Products", image: blackSmartCard }, // Placeholder
-  { id: 19, name: "Protected Wallet & Passport", price: "25 $", originalPrice: "40 $", category: "Protection Products", image: specialNfcCard }, // Placeholder
-  { id: 20, name: "Card Guard", price: "18 $", originalPrice: "28 $", category: "Protection Products", image: whiteSmartCard }, // Placeholder
+  { id: 20, name: "Anti ID Thief Card", price: "20 $", originalPrice: "30 $", category: "Protection Products", image: blackSmartCard }, // Placeholder
+  { id: 21, name: "Protected Wallet & Passport", price: "25 $", originalPrice: "40 $", category: "Protection Products", image: specialNfcCard }, // Placeholder
+  { id: 22, name: "Card Guard", price: "18 $", originalPrice: "28 $", category: "Protection Products", image: whiteSmartCard }, // Placeholder
 ];
 
 const categories = [
