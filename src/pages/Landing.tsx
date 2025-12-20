@@ -21,36 +21,36 @@ import smartWhiteNecklace from "@/assets/products/smart-white-necklace.png";
 
 const products = [
   // 1-Personalised
-  { id: 1, name: "Smart Stand for Menu & Google Review", price: "50 $", category: "Personalised", image: smartStandMenu },
-  { id: 2, name: "Personalised Smart Card", price: "40 $", category: "Personalised", image: personalisedSmartCard },
-  { id: 3, name: "Personalised Wooden Card", price: "35 $", category: "Personalised", image: personalisedWoodenCard },
+  { id: 1, name: "Smart Stand for Menu & Google Review", price: "50 $", originalPrice: "75 $", category: "Personalised", image: smartStandMenu },
+  { id: 2, name: "Personalised Smart Card", price: "40 $", originalPrice: "60 $", category: "Personalised", image: personalisedSmartCard },
+  { id: 3, name: "Personalised Wooden Card", price: "35 $", originalPrice: "50 $", category: "Personalised", image: personalisedWoodenCard },
 
   // 2-Smart accessories
-  { id: 4, name: "Smart White Necklace", price: "40 $", category: "Smart Accessories", image: smartWhiteNecklace },
-  { id: 5, name: "Smart Black Necklace", price: "35 $", category: "Smart Accessories", image: smartNecklace },
-  { id: 6, name: "Smart Ring", price: "35 $", category: "Smart Accessories", image: smartRing },
+  { id: 4, name: "Smart White Necklace", price: "40 $", originalPrice: "60 $", category: "Smart Accessories", image: smartWhiteNecklace },
+  { id: 5, name: "Smart Black Necklace", price: "35 $", originalPrice: "50 $", category: "Smart Accessories", image: smartNecklace },
+  { id: 6, name: "Smart Ring", price: "35 $", originalPrice: "50 $", category: "Smart Accessories", image: smartRing },
 
   // 3- Cards
-  { id: 7, name: "Special Smart Card", price: "25 $", category: "Cards", image: specialNfcCard },
-  { id: 8, name: "Black Smart Card", price: "22 $", category: "Cards", image: blackSmartCard },
-  { id: 9, name: "White Smart Card", price: "22 $", category: "Cards", image: whiteSmartCard },
-  { id: 10, name: "WhatsApp Smart Card", price: "25 $", category: "Cards", image: whatsappSmartCard },
-  { id: 11, name: "Instagram Smart Card", price: "25 $", category: "Cards", image: instagramSmartCard },
+  { id: 7, name: "Special Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: specialNfcCard },
+  { id: 8, name: "Black Smart Card", price: "22 $", originalPrice: "35 $", category: "Cards", image: blackSmartCard },
+  { id: 9, name: "White Smart Card", price: "22 $", originalPrice: "35 $", category: "Cards", image: whiteSmartCard },
+  { id: 10, name: "WhatsApp Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: whatsappSmartCard },
+  { id: 11, name: "Instagram Smart Card", price: "25 $", originalPrice: "40 $", category: "Cards", image: instagramSmartCard },
 
   // 4 - Smart keychain
-  { id: 12, name: "WhatsApp Keychain", price: "25 $", category: "Smart Keychain", image: smartWhatsappKeychain },
-  { id: 13, name: "Google Reviews Keychain", price: "25 $", category: "Smart Keychain", image: googleReviewsKeychain },
-  { id: 14, name: "Printable Smart Keychain", price: "20 $", category: "Smart Keychain", image: printableSmartKeychain },
-  { id: 15, name: "Instagram Keychain", price: "25 $", category: "Smart Keychain", image: instagramSmartKeychain },
+  { id: 12, name: "WhatsApp Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: smartWhatsappKeychain },
+  { id: 13, name: "Google Reviews Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: googleReviewsKeychain },
+  { id: 14, name: "Printable Smart Keychain", price: "20 $", originalPrice: "30 $", category: "Smart Keychain", image: printableSmartKeychain },
+  { id: 15, name: "Instagram Keychain", price: "25 $", originalPrice: "40 $", category: "Smart Keychain", image: instagramSmartKeychain },
 
   // 5- Smart stickers
-  { id: 16, name: "White Smart Sticker", price: "18 $", category: "Smart Stickers", image: whiteSmartSticker },
-  { id: 17, name: "Black Smart Sticker", price: "17 $", category: "Smart Stickers", image: blackSmartSticker },
+  { id: 16, name: "White Smart Sticker", price: "18 $", originalPrice: "28 $", category: "Smart Stickers", image: whiteSmartSticker },
+  { id: 17, name: "Black Smart Sticker", price: "17 $", originalPrice: "25 $", category: "Smart Stickers", image: blackSmartSticker },
 
   // 6- Protection products
-  { id: 18, name: "Anti ID Thief Card", price: "20 $", category: "Protection Products", image: blackSmartCard }, // Placeholder
-  { id: 19, name: "Protected Wallet & Passport", price: "25 $", category: "Protection Products", image: specialNfcCard }, // Placeholder
-  { id: 20, name: "Card Guard", price: "18 $", category: "Protection Products", image: whiteSmartCard }, // Placeholder
+  { id: 18, name: "Anti ID Thief Card", price: "20 $", originalPrice: "30 $", category: "Protection Products", image: blackSmartCard }, // Placeholder
+  { id: 19, name: "Protected Wallet & Passport", price: "25 $", originalPrice: "40 $", category: "Protection Products", image: specialNfcCard }, // Placeholder
+  { id: 20, name: "Card Guard", price: "18 $", originalPrice: "28 $", category: "Protection Products", image: whiteSmartCard }, // Placeholder
 ];
 
 const categories = [
@@ -101,6 +101,11 @@ const ProductCard = ({ product }: { product: typeof products[0] }) => {
         <span className="absolute top-4 left-4 bg-white/10 backdrop-blur-md text-white text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-white/20">
           {product.category}
         </span>
+        {product.originalPrice && (
+          <div className="absolute top-4 right-4 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-xl animate-pulse">
+            -{Math.round((1 - parseInt(product.price) / parseInt(product.originalPrice)) * 100)}%
+          </div>
+        )}
       </div>
 
       <div className="p-6 space-y-4 flex flex-col flex-grow">
@@ -109,7 +114,10 @@ const ProductCard = ({ product }: { product: typeof products[0] }) => {
         </h3>
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
           <div className="flex flex-col">
-            <p className="text-2xl font-black text-white">{product.price}</p>
+            <div className="flex items-baseline gap-2">
+              <p className="text-2xl font-black text-white">{product.price}</p>
+              <p className="text-sm text-white/40 line-through decoration-primary/50">{product.originalPrice}</p>
+            </div>
             <div className="overflow-hidden">
               <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider transition-all duration-500 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 mt-0 group-hover:mt-1">
                 SHIPPING AND PROGRAMMING INCLUDED
