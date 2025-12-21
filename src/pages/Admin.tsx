@@ -43,7 +43,32 @@ import {
   ExternalLink,
   Image,
   Palette,
+  MessageCircle,
+  Phone,
+  Mail,
+  Globe,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Linkedin,
+  Github,
+  Send,
 } from "lucide-react";
+
+const platformBaseUrls: Record<string, string> = {
+  facebook: "https://facebook.com/",
+  instagram: "https://instagram.com/",
+  twitter: "https://twitter.com/",
+  tiktok: "https://tiktok.com/@",
+  snapchat: "https://snapchat.com/add/",
+  youtube: "https://youtube.com/",
+  linkedin: "https://linkedin.com/in/",
+  github: "https://github.com/",
+  whatsapp: "https://wa.me/",
+  telegram: "https://t.me/",
+  contact: "",
+};
 
 // URL validation schema
 const urlSchema = z.string()
@@ -75,7 +100,13 @@ const linkSchema = z.object({
 
 const socialLinkSchema = z.object({
   platform: z.string().min(1),
-  url: urlSchema,
+  url: z.string().min(1, "Required").refine(
+    (url) => {
+      const lowerUrl = url.toLowerCase().trim();
+      return !lowerUrl.startsWith("javascript:") && !lowerUrl.startsWith("data:");
+    },
+    "Invalid input"
+  ),
 });
 
 const slugSchema = z.string()
@@ -118,6 +149,7 @@ const Admin = () => {
   const [boxTextColor, setBoxTextColor] = useState("#1a1a2e");
   const [iconColor, setIconColor] = useState("#d4a574");
   const [iconBgColor, setIconBgColor] = useState("#1a1a2e");
+  const [linkIconColor, setLinkIconColor] = useState("#d4a574");
   const [editableLinks, setEditableLinks] = useState<Link[]>([]);
   const [editableSocials, setEditableSocials] = useState<SocialLink[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -152,6 +184,7 @@ const Admin = () => {
       setBoxTextColor(selectedProfile.box_text_color || "#1a1a2e");
       setIconColor(selectedProfile.icon_color || "#d4a574");
       setIconBgColor(selectedProfile.icon_bg_color || "#1a1a2e");
+      setLinkIconColor(selectedProfile.link_icon_color || "#d4a574");
     }
   }, [selectedProfile]);
 
@@ -211,21 +244,21 @@ const Admin = () => {
       const url = await uploadVcf(file);
 
       // Check if a "Contact" link already exists
-      const existingContactLink = links.find(l => l.icon === 'user');
+      const existingContactLink = links.find(l => l.icon === 'vcard' || l.icon === 'user');
 
       if (existingContactLink) {
         await updateLink.mutateAsync({
           id: existingContactLink.id,
           url: url,
-          label: "Contact",
-          icon: "user"
+          label: "Add Contact",
+          icon: "vcard"
         });
       } else {
         await createLink.mutateAsync({
           profile_id: selectedProfile.id,
-          label: "Contact",
+          label: "Add Contact",
           url: url,
-          icon: "user",
+          icon: "vcard",
           sort_order: -1, // Put it at the top
           is_active: true,
         });
@@ -240,7 +273,7 @@ const Admin = () => {
   };
 
   const toggleVcfActive = async (checked: boolean) => {
-    const contactLink = links.find(l => l.icon === 'user');
+    const contactLink = links.find(l => l.icon === 'vcard' || l.icon === 'user');
     if (!contactLink) return;
 
     try {
@@ -275,6 +308,7 @@ const Admin = () => {
         box_text_color: boxTextColor,
         icon_color: iconColor,
         icon_bg_color: iconBgColor,
+        link_icon_color: linkIconColor,
       });
       toast({ title: "Profile saved successfully" });
     } catch (error: any) {
@@ -684,7 +718,7 @@ const Admin = () => {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-background/30 p-4 rounded-2xl">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gold/20 rounded-xl flex items-center justify-center">
-                      <User className="w-6 h-6 text-gold" />
+                      <Phone className="w-6 h-6 text-gold" />
                     </div>
                     <div>
                       <h3 className="text-md font-bold text-card-foreground">Digital Contact Card (VCF)</h3>
@@ -700,11 +734,11 @@ const Admin = () => {
                       className="hidden"
                     />
 
-                    {links.find(l => l.icon === 'user') && (
+                    {links.find(l => l.icon === 'vcard' || l.icon === 'user') && (
                       <div className="flex items-center gap-2 bg-background/50 px-3 py-2 rounded-xl border border-link-border">
                         <span className="text-[10px] font-bold text-muted-foreground uppercase">Status</span>
                         <Switch
-                          checked={links.find(l => l.icon === 'user')?.is_active ?? false}
+                          checked={links.find(l => l.icon === 'vcard' || l.icon === 'user')?.is_active ?? false}
                           onCheckedChange={toggleVcfActive}
                         />
                       </div>
@@ -773,11 +807,33 @@ const Admin = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Preview */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <Label className="text-card-foreground text-sm">Icon Color (Links)</Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <input
+                          type="color"
+                          value={linkIconColor}
+                          onChange={(e) => setLinkIconColor(e.target.value)}
+                          className="w-12 h-10 rounded cursor-pointer border border-link-border bg-transparent"
+                        />
+                        <Input
+                          value={linkIconColor}
+                          onChange={(e) => setLinkIconColor(e.target.value)}
+                          className="bg-card border-link-border flex-1 text-card-foreground font-mono"
+                          dir="ltr"
+                        />
+                      </div>
+                    </div>
+                  </div>
                   <div
-                    className="p-4 rounded-xl border border-link-border text-center font-bold"
+                    className="p-4 rounded-xl border border-link-border text-center font-bold flex items-center justify-center gap-3"
                     style={{ backgroundColor: boxColor, color: boxTextColor }}
                   >
+                    <Share2
+                      className="w-5 h-5"
+                      style={{ color: linkIconColor }}
+                    />
                     Link Preview
                   </div>
                 </div>
@@ -787,7 +843,7 @@ const Admin = () => {
                   <h3 className="text-md font-medium text-card-foreground">Icon Styling</h3>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <Label className="text-card-foreground text-sm">Icon Color</Label>
+                      <Label className="text-card-foreground text-sm">Icon Color (Social)</Label>
                       <div className="flex items-center gap-2 mt-1">
                         <input
                           type="color"
@@ -856,48 +912,78 @@ const Admin = () => {
 
               <div className="space-y-4">
                 {editableLinks
-                  .filter(l => l.icon !== 'user')
+                  .filter(l => l.icon !== 'vcard' && l.icon !== 'user')
                   .map((link) => (
-                    <div key={link.id} className="flex gap-3 items-center bg-background/50 p-4 rounded-2xl border border-link-border group transition-all hover:border-gold/30">
-                      <div className="flex-1 grid md:grid-cols-2 gap-3">
-                        <Input
-                          value={link.label}
-                          onChange={(e) =>
-                            setEditableLinks((prev) =>
-                              prev.map((l) => (l.id === link.id ? { ...l, label: e.target.value } : l))
-                            )
-                          }
-                          placeholder="Link Title"
-                          className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground h-11 rounded-xl"
-                        />
-                        <Input
-                          value={link.url}
-                          onChange={(e) =>
-                            setEditableLinks((prev) =>
-                              prev.map((l) => (l.id === link.id ? { ...l, url: e.target.value } : l))
-                            )
-                          }
-                          placeholder="https://..."
-                          className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
-                          dir="ltr"
-                        />
+                    <div key={link.id} className="flex flex-col md:flex-row gap-3 items-start md:items-center bg-background/50 p-4 rounded-2xl border border-link-border group transition-all hover:border-gold/30">
+                      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 w-full">
+                        <div className="md:col-span-3">
+                          <select
+                            value={link.icon || "link"}
+                            onChange={(e) =>
+                              setEditableLinks((prev) =>
+                                prev.map((l) => (l.id === link.id ? { ...l, icon: e.target.value } : l))
+                              )
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-card border border-link-border text-card-foreground h-11 focus:ring-2 focus:ring-gold/20 outline-none transition-all text-sm"
+                          >
+                            <option value="link">Default Link (No Icon)</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="twitter">Twitter (Bird)</option>
+                            <option value="x">X (formerly Twitter)</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="snapchat">Snapchat</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="github">GitHub</option>
+                            <option value="telegram">Telegram</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-4">
+                          <Input
+                            value={link.label}
+                            onChange={(e) =>
+                              setEditableLinks((prev) =>
+                                prev.map((l) => (l.id === link.id ? { ...l, label: e.target.value } : l))
+                              )
+                            }
+                            placeholder="Link Title"
+                            className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground h-11 rounded-xl"
+                          />
+                        </div>
+                        <div className="md:col-span-5">
+                          <Input
+                            value={link.url}
+                            onChange={(e) =>
+                              setEditableLinks((prev) =>
+                                prev.map((l) => (l.id === link.id ? { ...l, url: e.target.value } : l))
+                              )
+                            }
+                            placeholder="https://..."
+                            className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
+                            dir="ltr"
+                          />
+                        </div>
                       </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => handleUpdateLink(link)}
-                        className="text-gold hover:bg-gold/10"
-                      >
-                        <Save className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => handleDeleteLink(link.id)}
-                        className="text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex gap-2 w-full md:w-auto justify-end">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleUpdateLink(link)}
+                          className="text-gold hover:bg-gold/10"
+                        >
+                          <Save className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleDeleteLink(link.id)}
+                          className="text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 {editableLinks.length === 0 && (
@@ -928,11 +1014,16 @@ const Admin = () => {
                     <div className="flex-1 grid md:grid-cols-2 gap-3">
                       <select
                         value={social.platform}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const platform = e.target.value;
                           setEditableSocials((prev) =>
-                            prev.map((s) => (s.id === social.id ? { ...s, platform: e.target.value } : s))
-                          )
-                        }
+                            prev.map((s) => (s.id === social.id ? {
+                              ...s,
+                              platform: platform,
+                              url: platformBaseUrls[platform as keyof typeof platformBaseUrls] || ""
+                            } : s))
+                          );
+                        }}
                         className="px-4 py-2 rounded-xl bg-card border border-link-border text-card-foreground h-11 focus:ring-2 focus:ring-gold/20 outline-none transition-all"
                       >
                         <option value="facebook">Facebook</option>
@@ -942,6 +1033,10 @@ const Admin = () => {
                         <option value="snapchat">Snapchat</option>
                         <option value="youtube">YouTube</option>
                         <option value="linkedin">LinkedIn</option>
+                        <option value="github">GitHub</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="telegram">Telegram</option>
+                        <option value="contact">Contact Number</option>
                       </select>
                       <Input
                         value={social.url}
@@ -950,9 +1045,10 @@ const Admin = () => {
                             prev.map((s) => (s.id === social.id ? { ...s, url: e.target.value } : s))
                           )
                         }
-                        placeholder="Social Profile Link"
+                        placeholder={social.platform === "contact" ? "Phone Number" : "Social Profile Link"}
                         className="bg-card border-link-border text-card-foreground placeholder:text-muted-foreground font-mono text-xs h-11 rounded-xl"
                         dir="ltr"
+                        type={social.platform === "contact" ? "tel" : "text"}
                       />
                     </div>
                     <Button

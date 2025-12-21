@@ -14,6 +14,7 @@ export interface Profile {
   box_text_color: string | null;
   icon_color: string | null;
   icon_bg_color: string | null;
+  link_icon_color: string | null;
 }
 
 export interface Link {

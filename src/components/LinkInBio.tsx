@@ -9,6 +9,12 @@ import {
   Linkedin,
   Link as LinkIconLucide,
   User,
+  Phone,
+  Mail,
+  Globe,
+  Github,
+  Send,
+  X,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import ProfileAvatar from "./ProfileAvatar";
@@ -23,6 +29,21 @@ const iconMap: Record<string, LucideIcon> = {
   "map-pin": MapPin,
   link: LinkIconLucide,
   user: User,
+  phone: Phone,
+  mail: Mail,
+  globe: Globe,
+  facebook: Facebook,
+  instagram: Instagram,
+  twitter: Twitter,
+  youtube: Youtube,
+  linkedin: Linkedin,
+  github: Github,
+  whatsapp: MessageCircle,
+  telegram: Send,
+  tiktok: Instagram,
+  snapchat: MessageCircle,
+  x: X,
+  vcard: Phone,
 };
 
 const socialIconMap: Record<string, LucideIcon> = {
@@ -33,6 +54,11 @@ const socialIconMap: Record<string, LucideIcon> = {
   linkedin: Linkedin,
   tiktok: Instagram,
   snapchat: MessageCircle,
+  whatsapp: MessageCircle,
+  telegram: Send,
+  github: Github,
+  contact: Phone,
+  x: X,
 };
 
 interface LinkInBioProps {
@@ -113,7 +139,7 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
               {links
                 .filter((link) => link.is_active !== false)
                 .map((link, index) => {
-                  const IconComponent = iconMap[link.icon || "link"] || LinkIconLucide;
+                  const IconComponent = link.icon && link.icon !== 'link' ? iconMap[link.icon] : undefined;
                   return (
                     <LinkButton
                       key={link.id}
@@ -123,6 +149,7 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
                       delay={200 + index * 100}
                       boxColor={profile?.box_color}
                       textColor={profile?.box_text_color}
+                      iconColor={profile?.link_icon_color}
                     />
                   );
                 })}
@@ -136,10 +163,14 @@ const LinkInBio = ({ slug }: LinkInBioProps) => {
               >
                 {socialLinks.map((social) => {
                   const IconComponent = socialIconMap[social.platform] || Facebook;
+                  const href = social.platform === 'contact' && /^[0-9+\s-]+$/.test(social.url)
+                    ? `tel:${social.url.replace(/\s/g, '')}`
+                    : social.url;
+
                   return (
                     <SocialIcon
                       key={social.id}
-                      href={social.url}
+                      href={href}
                       icon={IconComponent}
                       label={social.platform}
                       iconColor={profile?.icon_color}

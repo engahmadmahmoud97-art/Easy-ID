@@ -3,16 +3,25 @@ import { cn } from "@/lib/utils";
 
 interface LinkButtonProps {
   href: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   label: string;
   delay?: number;
   boxColor?: string | null;
   textColor?: string | null;
+  iconColor?: string | null;
 }
 
-const LinkButton = ({ href, icon: Icon, label, delay = 0, boxColor, textColor }: LinkButtonProps) => {
+const LinkButton = ({
+  href,
+  icon: Icon,
+  label,
+  delay = 0,
+  boxColor,
+  textColor,
+  iconColor
+}: LinkButtonProps) => {
   const hasCustomColors = boxColor || textColor;
-  
+
   return (
     <a
       href={href}
@@ -27,13 +36,18 @@ const LinkButton = ({ href, icon: Icon, label, delay = 0, boxColor, textColor }:
         "animate-fade-up",
         !hasCustomColors && "bg-link text-card-foreground hover:bg-link-hover"
       )}
-      style={{ 
+      style={{
         animationDelay: `${delay}ms`,
         ...(boxColor && { backgroundColor: boxColor }),
         ...(textColor && { color: textColor }),
       }}
     >
-      <Icon className="w-5 h-5" />
+      {Icon && (
+        <Icon
+          className="w-5 h-5"
+          style={{ color: iconColor || textColor || undefined }}
+        />
+      )}
       <span>{label}</span>
     </a>
   );
