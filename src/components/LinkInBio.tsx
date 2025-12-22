@@ -1,3 +1,4 @@
+import React from "react";
 import {
   MessageCircle,
   Star,
@@ -17,13 +18,14 @@ import {
   X,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
+import { WhatsApp, Snapchat, TikTok } from "./icons/BrandIcons";
 import ProfileAvatar from "./ProfileAvatar";
 import LinkButton from "./LinkButton";
 import SocialIcon from "./SocialIcon";
 import { useProfileBySlug, useProfile, useLinks, useSocialLinks } from "@/hooks/useProfile";
 import spaBackground from "@/assets/spa-background.jpg";
 
-const iconMap: Record<string, LucideIcon> = {
+const iconMap: Record<string, LucideIcon | React.ComponentType<any>> = {
   "message-circle": MessageCircle,
   star: Star,
   "map-pin": MapPin,
@@ -38,23 +40,23 @@ const iconMap: Record<string, LucideIcon> = {
   youtube: Youtube,
   linkedin: Linkedin,
   github: Github,
-  whatsapp: MessageCircle,
+  whatsapp: WhatsApp,
   telegram: Send,
-  tiktok: Instagram,
-  snapchat: MessageCircle,
+  tiktok: TikTok,
+  snapchat: Snapchat,
   x: X,
   vcard: Phone,
 };
 
-const socialIconMap: Record<string, LucideIcon> = {
+const socialIconMap: Record<string, LucideIcon | React.ComponentType<any>> = {
   facebook: Facebook,
   instagram: Instagram,
   twitter: Twitter,
   youtube: Youtube,
   linkedin: Linkedin,
-  tiktok: Instagram,
-  snapchat: MessageCircle,
-  whatsapp: MessageCircle,
+  tiktok: TikTok,
+  snapchat: Snapchat,
+  whatsapp: WhatsApp,
   telegram: Send,
   github: Github,
   contact: Phone,

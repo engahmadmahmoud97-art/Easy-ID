@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface LinkButtonProps {
   href: string;
-  icon?: LucideIcon;
+  icon?: any;
   label: string;
   delay?: number;
   boxColor?: string | null;

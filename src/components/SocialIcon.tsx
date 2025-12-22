@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface SocialIconProps {
   href: string;
-  icon: LucideIcon;
+  icon: any;
   label: string;
   iconColor?: string | null;
   bgColor?: string | null;
@@ -11,7 +11,7 @@ interface SocialIconProps {
 
 const SocialIcon = ({ href, icon: Icon, label, iconColor, bgColor }: SocialIconProps) => {
   const hasCustomColors = iconColor || bgColor;
-  
+
   return (
     <a
       href={href}
