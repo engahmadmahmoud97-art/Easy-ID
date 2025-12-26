@@ -84,7 +84,7 @@ const itemVariants = {
 };
 
 const ProductCard = ({ product }: { product: typeof products[0] }) => {
-  const whatsappLink = `https://wa.me/962797541415?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name}`)}`;
+  const whatsappLink = `https://wa.me/962791997322?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name}`)}`;
 
   return (
     <motion.a
@@ -394,7 +394,7 @@ const Landing = () => {
                 Shop All Products
               </a>
               <a
-                href="https://wa.me/962797541415"
+                href="https://wa.me/962791997322"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-12 py-5 bg-green-500 text-white font-black text-lg rounded-full hover:bg-green-600 transition-all duration-300 flex items-center gap-3 shadow-lg shadow-green-500/20"
